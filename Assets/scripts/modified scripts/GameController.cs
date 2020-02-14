@@ -35,7 +35,7 @@ namespace Minigame
 
         [Range(0,100)] [SerializeField] private float _playerChance = 60;
         [Range(.01f, 100)] [SerializeField] private float _speedMultiplier = 1;
-        [SerializeField] public float GaugePoint = 0;
+        [SerializeField] public float GaugePoint { get; private set; } = 0;
 
 
         /// <summary>
@@ -63,17 +63,25 @@ namespace Minigame
 
         private void Update()
         {
+            MoveGauge();
+        }
+
+
+        #endregion
+
+        private void MoveGauge()
+        {
             if (movingState == 1)
-                GaugePoint += Time.deltaTime * _speedMultiplier;
+                GaugePoint += Time.deltaTime* _speedMultiplier;
             else if (movingState == -1)
-                GaugePoint -= Time.deltaTime * _speedMultiplier;
+                GaugePoint -= Time.deltaTime* _speedMultiplier;
 
             if (GaugePoint > 100)
             {
                 GaugePoint = 100;
                 movingState = -1;
             }
-            else if (GaugePoint < -100)
+            else if (GaugePoint< -100)
             {
                 GaugePoint = -100;
                 movingState = 1;
@@ -81,6 +89,5 @@ namespace Minigame
         }
 
 
-        #endregion
     }
 }
