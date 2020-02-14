@@ -10,9 +10,10 @@ namespace conditioning
     {
         int _barMovement;
         int _color;
-        public int _speed;
+        public float _speed, speedDecreasing;
+        bool _decreaseSpeed;
 
-      
+
         private void Update()
         {
             if (transform.position.x < -8.9f)
@@ -31,28 +32,29 @@ namespace conditioning
                     transform.Translate(Vector2.right * _speed * Time.deltaTime);
                     break;
             }
-            switch (_color)
+
+            if (Input.GetKeyDown(KeyCode.Space) && !_decreaseSpeed)
             {
-                case 1:
-                    _speed = 0;
-                    break;
-                case 2:
-                    _speed = 0;
-                    break;
-                default:
-                    _speed = 0;
-                    break;
+                _decreaseSpeed = true;
             }
+
+            if (_decreaseSpeed)
+            {
+                _speed -= Time.deltaTime * speedDecreasing;
+                if (_speed <= 0)
+                {
+                    _speed = 0;
+                    _decreaseSpeed = false;
+                }
+            }
+
         }
         private void OnTriggerStay2D(Collider2D collision)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
                 if (collision.gameObject.CompareTag("red"))
                     _color = 1;
                 else if (collision.gameObject.CompareTag("black"))
                     _color = 2;
-            }
         }
     }
   
