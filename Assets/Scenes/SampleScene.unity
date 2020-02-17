@@ -373,7 +373,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerData: {fileID: 11400000, guid: 801c2a8c7afcd0748bf56b741b17f156, type: 2}
   _playerChance: 60
-  _speedMultiplier: 10
+  _speedMultiplier: 200
+  _distanceBetweenTwoValues: 20
+  timeBetWeenValues: 300
+  movingState: 0
+  calculatedDistance: 0
+  _decelerating: 0
 --- !u!4 &1289377567
 Transform:
   m_ObjectHideFlags: 0
