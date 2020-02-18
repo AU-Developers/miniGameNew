@@ -37,9 +37,6 @@ namespace Minigame
         [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
         public float GaugePoint { get; private set; } = 0;
 
-        [Range(0, 100)] [SerializeField] private int _distanceBetweenTwoValues = 20;
-        [SerializeField] private float timeBetweenValues;
-
         /// <summary>
         /// Moving States
         /// <para>-1 - Moving Left</para>
@@ -47,11 +44,11 @@ namespace Minigame
         /// <para>1 - Moving Right</para>
         /// </summary>
         [SerializeField] private int movingState = 0;
-        int destinationValue = 0;
+        float destinationValue = 0;
 
         bool startedDecelerating;
-        [SerializeField] private int calculatedDistance;
-        [SerializeField] float _decelerating;
+        [SerializeField] private float calculatedDistance;
+        [SerializeField] private float _decelerationRate = 0;
 
         #region MonoBehaviour Methods
         private void Awake()
@@ -65,11 +62,12 @@ namespace Minigame
                 movingState = -1;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (Input.GetKeyDown(input))
+                startedDecelerating = true;
 
-            
+
             MoveGauge();
         }
 
@@ -81,24 +79,77 @@ namespace Minigame
             if (!startedDecelerating)
             {
                 if (movingState == 1)
-                    GaugePoint += Time.deltaTime * _speedMultiplier;
+                    GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
                 else if (movingState == -1)
-                    GaugePoint -= Time.deltaTime * _speedMultiplier;
+                    GaugePoint -= Time.fixedDeltaTime * _speedMultiplier;
             }
             else
             {
-                if (_decelerating > _speedMultiplier)
-                    _decelerating = _speedMultiplier;
-                else if (_decelerating > 0)
-                    _decelerating -= Time.deltaTime * _speedMultiplier;
-                else if (_decelerating < 0)
-                    _decelerating = 0;
+                float distance = 0;
+                if (_decelerationRate == 0 && _speedMultiplier > 0)
+                {
+                    if (movingState == 1) // Moving right
+                    {
+                        if (GaugePoint >= -playerData.stoppingPoint) // Overlapped negative stopping point
+                        {
+                            print("Overlapped negative stopping point");
+                            if (GaugePoint >= playerData.stoppingPoint) // Overlapped positive stopping point
+                            {
+                                distance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
+                                print("and overlapped positive stopping point");
+                            }
+                            else // did not overlap positive stopping point
+                            {
+                                distance = playerData.stoppingPoint - GaugePoint;
+                                print("but did not overlap positive stopping point");
+                            }
+                        }
+                        else // did not overlap negative stopping point
+                        {
+                            print("did not overlap anything");
+                            distance = GaugePoint - -playerData.stoppingPoint;
+                        }
+                    }
+                    else if (movingState == -1)
+                    {
+                        if (GaugePoint <= playerData.stoppingPoint) // Overlapped positive stopping point
+                        {
+                            if (GaugePoint <= -playerData.stoppingPoint) // Overlapped negative stopping point
+                            {
+                                distance = (-100 - GaugePoint) + (-100 - -playerData.stoppingPoint);
+                            }
+                            else // did not overlap negative stopping point
+                            {
+                                distance = -playerData.stoppingPoint - GaugePoint;
+                            }
+                        }
+                        else // did not overlap positive
+                        {
+                            distance = GaugePoint - playerData.stoppingPoint;
+                        }
+                    }
 
+                    distance = Mathf.Abs(distance);
+
+                    _decelerationRate = (_speedMultiplier * _speedMultiplier)/(distance * 2);
+                    print("GaugePoint: " + GaugePoint + "\nDistance: " + distance);
+                    if (movingState == 1)
+                        print("Moving right");
+                    else
+                        print("Moving left");
+                    print(_decelerationRate);
+                }
+                if (_speedMultiplier > 0)
+                    _speedMultiplier -= _decelerationRate * Time.fixedDeltaTime;
+                else if (_speedMultiplier < 0)
+                    _speedMultiplier = 0;
+                else
+                    print(GaugePoint);
 
                 if (movingState == 1)
-                    GaugePoint += Time.deltaTime * _decelerating;
+                    GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
                 else if (movingState == -1)
-                    GaugePoint -= Time.deltaTime * _decelerating;
+                    GaugePoint -= Time.fixedDeltaTime * _speedMultiplier;
             }
 
             if (GaugePoint > 100)
@@ -135,8 +186,8 @@ namespace Minigame
 
         private void GenerateDestinationValue()
         {
-            float chanceOfRed = playerData.perfectChance / 100;
-            float chanceOfBlack = playerData.goodChance / 100;
+            float chanceOfRed = playerData.perfectChanceRange / 100;
+            float chanceOfBlack = playerData.goodChanceRange / 100;
             
 
             startedDecelerating = true;
@@ -144,25 +195,25 @@ namespace Minigame
             //var distance = (int)GaugePoint - destinationValue;
 
             print(GaugePoint);
+            print(playerData.stoppingPoint);
 
-            if (GaugePoint > destinationValue)
+            if (GaugePoint > playerData.stoppingPoint)
             {
                 if (movingState == 1)
-                    calculatedDistance = (100 - (int)GaugePoint) + (100 - destinationValue);
+                    calculatedDistance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
                 else
-                    calculatedDistance = ((-100 - (int)GaugePoint) * (-1)) + ((-100 - destinationValue) * (-1));
+                    calculatedDistance = ((-100 - GaugePoint) * (-1)) + ((-100 - playerData.stoppingPoint) * (-1));
             }
             else
             {
                 if (movingState == 1)
-                    calculatedDistance = ((int)GaugePoint * (-1)) + destinationValue;
+                    calculatedDistance = (GaugePoint * (-1)) + playerData.stoppingPoint;
                 else
-                    calculatedDistance = ((100 + (int)GaugePoint)) + destinationValue + 100;
+                    calculatedDistance = ((100 + GaugePoint)) + playerData.stoppingPoint + 100;
             }
 
-            timeBetweenValues = calculatedDistance / _speedMultiplier;
-
-            _decelerating = _speedMultiplier / timeBetweenValues;
+            print(movingState);
+            print(calculatedDistance);
         }
 
         private void StartDecelerating()

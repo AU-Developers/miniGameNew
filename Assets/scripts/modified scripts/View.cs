@@ -80,8 +80,8 @@ namespace Minigame
             _blackSize = black.sizeDelta;
             _redSize = black.sizeDelta;
 
-            blackSize = (GameController.Instance.playerData.goodChance / 100) * _whiteSize.x;
-            redSize = (GameController.Instance.playerData.perfectChance / 100) * _whiteSize.x;
+            blackSize = (GameController.Instance.playerData.goodChanceRange / 100) * _whiteSize.x;
+            redSize = (GameController.Instance.playerData.perfectChanceRange / 100) * _whiteSize.x;
         }
 
         void Update()
