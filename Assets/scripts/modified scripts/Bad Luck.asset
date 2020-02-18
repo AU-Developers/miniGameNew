@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1954a000a113c55479d9abf8dd70fe66, type: 3}
   m_Name: Bad Luck
   m_EditorClassIdentifier: 
-  chanceToWin: 20
-  goodChance: 10
-  perfectChance: 5
+  stoppingPoint: 69.8
+  goodChanceRange: 30
+  perfectChanceRange: 10

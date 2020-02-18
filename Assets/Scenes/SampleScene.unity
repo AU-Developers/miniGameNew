@@ -371,14 +371,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2af663b463980c04cbb0eb9513f3d9ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  input: 32
   _playerData: {fileID: 11400000, guid: 801c2a8c7afcd0748bf56b741b17f156, type: 2}
-  _playerChance: 60
-  _speedMultiplier: 200
-  _distanceBetweenTwoValues: 20
-  timeBetweenValues: 0
+  _speedMultiplier: 120
   movingState: 0
   calculatedDistance: 0
-  _decelerating: 0
+  _decelerationRate: 0
 --- !u!4 &1289377567
 Transform:
   m_ObjectHideFlags: 0
