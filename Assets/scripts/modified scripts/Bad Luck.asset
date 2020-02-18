@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Bad Luck
   m_EditorClassIdentifier: 
   chanceToWin: 20
-  goodChance: 10
+  goodChance: 20
   perfectChance: 5

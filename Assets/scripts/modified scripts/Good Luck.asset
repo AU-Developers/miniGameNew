@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chanceToWin: 20
   goodChance: 50
-  perfectChance: 30
+  perfectChance: 10
