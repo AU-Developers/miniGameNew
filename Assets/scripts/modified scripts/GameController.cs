@@ -38,7 +38,7 @@ namespace Minigame
         [SerializeField] public float GaugePoint { get; private set; } = 0;
 
         [Range(0, 100)] [SerializeField] private int _distanceBetweenTwoValues = 20;
-        [Range(0, 1000)] [SerializeField] private float timeBetWeenValues;
+        [SerializeField] private float timeBetweenValues;
 
         /// <summary>
         /// Moving States
@@ -90,7 +90,9 @@ namespace Minigame
             }
             else
             {
-                if (_decelerating > 0)
+                if (_decelerating > _speedMultiplier)
+                    _decelerating = _speedMultiplier;
+                else if (_decelerating > 0)
                     _decelerating -= Time.deltaTime * _speedMultiplier;
                 else if (_decelerating < 0)
                     _decelerating = 0;
@@ -127,7 +129,7 @@ namespace Minigame
                 if (Mathf.Abs(distance) < _distanceBetweenTwoValues)
                 {
                     if (_speedMultiplier > 0)
-                        _speedMultiplier -= Time.deltaTime * timeBetWeenValues;
+                        _speedMultiplier -= Time.deltaTime * timeBetweenValues;
                     else
                         _speedMultiplier = 0;
                 }
@@ -143,6 +145,8 @@ namespace Minigame
             float chanceOfBlack = .45f;
 
             captureGaugePoint = true;
+
+            
 
             float sumOfAll = chanceOfBlack + chanceOfWhite + chanceOfRed;
 
@@ -178,7 +182,9 @@ namespace Minigame
                     calculatedDistance = ((100 + (int)GaugePoint)) + destinationValue + 100;
             }
 
-            _decelerating = _speedMultiplier * (calculatedDistance / GaugePoint);
+            timeBetweenValues = calculatedDistance / _speedMultiplier;
+
+            _decelerating = _speedMultiplier / timeBetweenValues;
         }
     }
 }
