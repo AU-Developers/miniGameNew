@@ -34,8 +34,8 @@ namespace Minigame
         }
 
         [Range(0,100)] [SerializeField] private float _playerChance = 60;
-        [Range(.01f, 200)] [SerializeField] private float _speedMultiplier = 160;
-        [SerializeField] public float GaugePoint { get; private set; } = 0;
+        [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
+        public float GaugePoint { get; private set; } = 0;
 
         [Range(0, 100)] [SerializeField] private int _distanceBetweenTwoValues = 20;
         [SerializeField] private float timeBetweenValues;
@@ -46,11 +46,11 @@ namespace Minigame
         /// <para>0 - Not Moving</para>
         /// <para>1 - Moving Right</para>
         /// </summary>
-        public int movingState = 0;
+        [SerializeField] private int movingState = 0;
         int destinationValue;
 
         bool captureGaugePoint;
-        public int calculatedDistance;
+        [SerializeField] private int calculatedDistance;
         [SerializeField] float _decelerating;
 
         #region MonoBehaviour Methods
@@ -138,30 +138,10 @@ namespace Minigame
 
         private void GenerateDestinationValue()
         {
-
-            float randomValue = Random.value;
-            float chanceOfRed = 0.1f;
-            float chanceOfWhite = .45f;
-            float chanceOfBlack = .45f;
+            float chanceOfRed = playerData.perfectChance / 100;
+            float chanceOfBlack = playerData.goodChance / 100;
 
             captureGaugePoint = true;
-
-            
-
-            float sumOfAll = chanceOfBlack + chanceOfWhite + chanceOfRed;
-
-            float a = chanceOfRed / sumOfAll;
-            float b = (chanceOfWhite / sumOfAll) + a;
-            float c = (chanceOfBlack / sumOfAll) + a + b;
-
-            if (randomValue < a)
-                destinationValue = Random.Range(-10, 10);
-            else if (randomValue < b && movingState == 1 || randomValue < c && movingState == 1)
-                destinationValue = Random.Range(11, 100);
-            else if (randomValue < c && movingState == -1 || randomValue < b && movingState == -1)
-                destinationValue = Random.Range(-100, -11);
-
-            print("Random Number " + destinationValue + " Random Value " + randomValue);
 
             //var distance = (int)GaugePoint - destinationValue;
 

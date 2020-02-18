@@ -6,9 +6,11 @@ namespace Minigame
 {
     public class View : MonoBehaviour
     {
-        [SerializeField] RectTransform movingBar;
+        [SerializeField] RectTransform movingBar = null;
+        [SerializeField] RectTransform white, black, red;
 
         private Vector2 _barPosition;
+        private Vector2 _whiteSize, _blackSize, _redSize;
         private float barPosition
         {
             get
@@ -24,15 +26,67 @@ namespace Minigame
                 }
             }
         }
+        private float whiteSize
+        {
+            get
+            {
+                return _whiteSize.x;
+            }
+            set
+            {
+                if (value != _whiteSize.x)
+                {
+                    _whiteSize.x = value;
+                    white.sizeDelta = _whiteSize;
+                }
+            }
+        }
+        private float blackSize
+        {
+            get
+            {
+                return _blackSize.x;
+            }
+            set
+            {
+                if (value != _blackSize.x)
+                {
+                    _blackSize.x = value;
+                    black.sizeDelta = _blackSize;
+                }
+            }
+        }
+        private float redSize
+        {
+            get
+            {
+                return _redSize.x;
+            }
+            set
+            {
+                if (value != _redSize.x)
+                {
+                    _redSize.x = value;
+                    red.sizeDelta = _redSize;
+                }
+            }
+        }
+
 
         private void Start()
         {
             _barPosition.y = movingBar.anchoredPosition.y;
+            _whiteSize = white.sizeDelta;
+            _blackSize = black.sizeDelta;
+            _redSize = black.sizeDelta;
+
+            blackSize = (GameController.Instance.playerData.goodChance / 100) * _whiteSize.x;
+            redSize = (GameController.Instance.playerData.perfectChance / 100) * _whiteSize.x;
         }
 
         void Update()
         {
-            barPosition = 953 * (GameController.Instance.GaugePoint / 100);
+            barPosition = 954 * (GameController.Instance.GaugePoint / 100);
         }
     }
 }

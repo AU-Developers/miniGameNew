@@ -375,7 +375,7 @@ MonoBehaviour:
   _playerChance: 60
   _speedMultiplier: 200
   _distanceBetweenTwoValues: 20
-  timeBetWeenValues: 300
+  timeBetweenValues: 0
   movingState: 0
   calculatedDistance: 0
   _decelerating: 0
@@ -497,6 +497,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movingBar: {fileID: 394017421}
+  white: {fileID: 1034749842}
+  black: {fileID: 1383157512}
+  red: {fileID: 1748683099}
 --- !u!4 &1613390119
 Transform:
   m_ObjectHideFlags: 0
