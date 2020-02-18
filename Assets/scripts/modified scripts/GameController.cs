@@ -164,10 +164,10 @@ namespace Minigame
 
             _decelerating = _speedMultiplier / timeBetweenValues;
         }
-    }
 
-    private void StartDecelerating()
-    {
+        private void StartDecelerating()
+        {
 
+        }
     }
 }
