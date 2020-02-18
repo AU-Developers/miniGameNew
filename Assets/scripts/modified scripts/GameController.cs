@@ -6,6 +6,7 @@ namespace Minigame
 {
     public class GameController : MonoBehaviour
     {
+        [SerializeField] private KeyCode input = KeyCode.Space;
         [SerializeField] private PlayerData _playerData = null;
         public PlayerData playerData
         {
