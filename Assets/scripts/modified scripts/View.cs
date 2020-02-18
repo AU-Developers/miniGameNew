@@ -7,10 +7,10 @@ namespace Minigame
     public class View : MonoBehaviour
     {
         [SerializeField] RectTransform movingBar = null;
-        [SerializeField] RectTransform white, black, red;
+        [SerializeField] RectTransform white = null, black = null, red = null;
 
-        private Vector2 _barPosition;
-        private Vector2 _whiteSize, _blackSize, _redSize;
+        private Vector2 _barPosition = Vector2.zero;
+        private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
         private float barPosition
         {
             get
@@ -86,7 +86,7 @@ namespace Minigame
 
         void Update()
         {
-            barPosition = 954 * (GameController.Instance.GaugePoint / 100);
+            barPosition = (whiteSize/2) * (GameController.Instance.GaugePoint / 100);
         }
     }
 }

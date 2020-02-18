@@ -34,7 +34,6 @@ namespace Minigame
             }
         }
 
-        [Range(0,100)] [SerializeField] private float _playerChance = 60;
         [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
         public float GaugePoint { get; private set; } = 0;
 
@@ -48,9 +47,9 @@ namespace Minigame
         /// <para>1 - Moving Right</para>
         /// </summary>
         [SerializeField] private int movingState = 0;
-        int destinationValue;
+        int destinationValue = 0;
 
-        bool captureGaugePoint;
+        bool startedDecelerating;
         [SerializeField] private int calculatedDistance;
         [SerializeField] float _decelerating;
 
@@ -68,11 +67,8 @@ namespace Minigame
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-                GenerateDestinationValue();
+            if (Input.GetKeyDown(input))
 
-            //if (captureGaugePoint)
-               // StoppingGauge();
             
             MoveGauge();
         }
@@ -82,7 +78,7 @@ namespace Minigame
 
         private void MoveGauge()
         {
-            if (!captureGaugePoint)
+            if (!startedDecelerating)
             {
                 if (movingState == 1)
                     GaugePoint += Time.deltaTime * _speedMultiplier;
@@ -141,8 +137,9 @@ namespace Minigame
         {
             float chanceOfRed = playerData.perfectChance / 100;
             float chanceOfBlack = playerData.goodChance / 100;
+            
 
-            captureGaugePoint = true;
+            startedDecelerating = true;
 
             //var distance = (int)GaugePoint - destinationValue;
 
@@ -167,5 +164,10 @@ namespace Minigame
 
             _decelerating = _speedMultiplier / timeBetweenValues;
         }
+    }
+
+    private void StartDecelerating()
+    {
+
     }
 }
