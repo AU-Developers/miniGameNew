@@ -178,9 +178,9 @@ namespace Minigame
             if (randomValue <= playerData.perfectChanceRange / 100)
                 playerData.stoppingPoint = Random.Range(0, playerData.perfectChanceRange);
             else if (randomValue <= playerData.goodChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(11, playerData.goodChanceRange);
+                playerData.stoppingPoint = Random.Range(playerData.perfectChanceRange+1, playerData.goodChanceRange);
             else
-                playerData.stoppingPoint = Random.Range(21, 100);
+                playerData.stoppingPoint = Random.Range(playerData.goodChanceRange+1, 100);
         }
 
         #region Functions for Buttons
