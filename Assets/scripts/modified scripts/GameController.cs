@@ -60,13 +60,13 @@ namespace Minigame
                 movingState = 1;
             else
                 movingState = -1;
-        }
 
+            RandomGenerationOfStoppingPoint();
+        }
         private void FixedUpdate()
         {
             if (Input.GetKeyDown(input))
                 startedDecelerating = true;
-
 
             MoveGauge();
         }
@@ -92,21 +92,21 @@ namespace Minigame
                     {
                         if (GaugePoint >= -playerData.stoppingPoint) // Overlapped negative stopping point
                         {
-                            print("Overlapped negative stopping point");
+                            //print("Overlapped negative stopping point");
                             if (GaugePoint >= playerData.stoppingPoint) // Overlapped positive stopping point
                             {
                                 distance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
-                                print("and overlapped positive stopping point");
+                                //print("and overlapped positive stopping point");
                             }
                             else // did not overlap positive stopping point
                             {
                                 distance = playerData.stoppingPoint - GaugePoint;
-                                print("but did not overlap positive stopping point");
+                                //print("but did not overlap positive stopping point");
                             }
                         }
                         else // did not overlap negative stopping point
                         {
-                            print("did not overlap anything");
+                            //print("did not overlap anything");
                             distance = GaugePoint - -playerData.stoppingPoint;
                         }
                     }
@@ -132,12 +132,12 @@ namespace Minigame
                     distance = Mathf.Abs(distance);
 
                     _decelerationRate = (_speedMultiplier * _speedMultiplier)/(distance * 2);
-                    print("GaugePoint: " + GaugePoint + "\nDistance: " + distance);
-                    if (movingState == 1)
-                        print("Moving right");
-                    else
-                        print("Moving left");
-                    print(_decelerationRate);
+                    //print("GaugePoint: " + GaugePoint + "\nDistance: " + distance);
+                    //if (movingState == 1)
+                   //    print("Moving right");
+                    //else
+                    //    print("Moving left");
+                    //print(_decelerationRate);
                 }
                 if (_speedMultiplier > 0)
                     _speedMultiplier -= _decelerationRate * Time.fixedDeltaTime;
@@ -164,61 +164,16 @@ namespace Minigame
             }
         }
 
-        
-
-        private void StoppingGauge()
+        private void RandomGenerationOfStoppingPoint()
         {
-            //if (Mathf.Abs(distance) > _distanceBetweenTwoValues)
-            //   _speedMultiplier -= Time.deltaTime * (GaugePoint / calculatedDistance);
+            float randomValue = Random.value;
 
-            /*if (GaugePoint > destinationValue && movingState == 1
-                    || GaugePoint < destinationValue && movingState == -1)
-            {
-                if (Mathf.Abs(distance) < _distanceBetweenTwoValues)
-                {
-                    if (_speedMultiplier > 0)
-                        _speedMultiplier -= Time.deltaTime * timeBetweenValues;
-                    else
-                        _speedMultiplier = 0;
-                }
-            }*/
-        }
-
-        private void GenerateDestinationValue()
-        {
-            float chanceOfRed = playerData.perfectChanceRange / 100;
-            float chanceOfBlack = playerData.goodChanceRange / 100;
-            
-
-            startedDecelerating = true;
-
-            //var distance = (int)GaugePoint - destinationValue;
-
-            print(GaugePoint);
-            print(playerData.stoppingPoint);
-
-            if (GaugePoint > playerData.stoppingPoint)
-            {
-                if (movingState == 1)
-                    calculatedDistance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
-                else
-                    calculatedDistance = ((-100 - GaugePoint) * (-1)) + ((-100 - playerData.stoppingPoint) * (-1));
-            }
+            if (randomValue <= playerData.perfectChanceRange / 100)
+                playerData.stoppingPoint = Random.Range(0, 10);
+            else if (randomValue <= playerData.goodChanceRange / 100)
+                playerData.stoppingPoint = Random.Range(11, 20);
             else
-            {
-                if (movingState == 1)
-                    calculatedDistance = (GaugePoint * (-1)) + playerData.stoppingPoint;
-                else
-                    calculatedDistance = ((100 + GaugePoint)) + playerData.stoppingPoint + 100;
-            }
-
-            print(movingState);
-            print(calculatedDistance);
-        }
-
-        private void StartDecelerating()
-        {
-
+                playerData.stoppingPoint = Random.Range(21, 100);
         }
     }
 }
