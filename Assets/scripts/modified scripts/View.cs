@@ -112,13 +112,13 @@ namespace Minigame
             if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
                 int index = 0;
-                if (GameController.Instance.playerData.stoppingPoint <= 10)
+                if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.perfectChanceRange)
                 {
                     index = 2;
                     
                     text.text = "Hit";
                 }
-                else if (GameController.Instance.playerData.stoppingPoint <= 20)
+                else if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.goodChanceRange)
                 {
                     index = 1;
                     text.text = "Good";
