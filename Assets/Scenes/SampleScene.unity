@@ -5309,7 +5309,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 882980884}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1289377566}
+        m_MethodName: PlayAgain
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &882980884
@@ -5667,7 +5678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: 32
   _playerData: {fileID: 11400000, guid: 801c2a8c7afcd0748bf56b741b17f156, type: 2}
-  _speedMultiplier: 200
+  _speedMultiplier: 205
   movingState: 0
   _decelerationRate: 0
 --- !u!4 &1289377567
@@ -5792,6 +5803,7 @@ MonoBehaviour:
   black: {fileID: 1383157512}
   red: {fileID: 1748683099}
   MenuPanel: {fileID: 536488912}
+  text: {fileID: 1622885825}
 --- !u!4 &1613390119
 Transform:
   m_ObjectHideFlags: 0

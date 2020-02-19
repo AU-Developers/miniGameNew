@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Minigame
 {
@@ -10,6 +11,8 @@ namespace Minigame
         [SerializeField] RectTransform white = null, black = null, red = null;
 
         [SerializeField] GameObject MenuPanel;
+
+        [SerializeField] Text text;
 
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
@@ -74,7 +77,6 @@ namespace Minigame
             }
         }
 
-
         private void Start()
         {
             _barPosition.y = movingBar.anchoredPosition.y;
@@ -94,6 +96,11 @@ namespace Minigame
                 MenuPanel.SetActive(true);
             else
                 MenuPanel.SetActive(false);
+
+            if (GameController.Instance.playerData.stoppingPoint <= 10)
+                text.text = "Hit";
+            else
+                text.text = "Miss";
         }
     }
 }

@@ -59,10 +59,6 @@ namespace Minigame
             _instance = this;
             if (!_playerData)
                 Debug.Log("No Player Data found.");
-            if (Random.value >= .5f)
-                movingState = 1;
-            else
-                movingState = -1;
 
             RandomGenerationOfStoppingPoint();
 
@@ -133,13 +129,8 @@ namespace Minigame
                     distance = Mathf.Abs(distance);
 
                     _decelerationRate = (_speedMultiplier * _speedMultiplier)/(distance * 2);
-                    //print("GaugePoint: " + GaugePoint + "\nDistance: " + distance);
-                    //if (movingState == 1)
-                   //    print("Moving right");
-                    //else
-                    //    print("Moving left");
-                    //print(_decelerationRate);
                 }
+
                 if (_speedMultiplier > 0)
                     _speedMultiplier -= _decelerationRate * Time.fixedDeltaTime;
                 else if (_speedMultiplier < 0)
@@ -170,6 +161,11 @@ namespace Minigame
         /// </summary>
         private void RandomGenerationOfStoppingPoint()
         {
+            if (Random.value >= .5f)
+                movingState = 1;
+            else
+                movingState = -1;
+
             float randomValue = Random.value;
 
             if (randomValue <= playerData.perfectChanceRange / 100)
@@ -182,9 +178,14 @@ namespace Minigame
 
         #region Functions for Buttons
 
+        /// <summary>
+        /// Reseting values to play again
+        /// </summary>
         public void PlayAgain()
         {
             RandomGenerationOfStoppingPoint();
+            _decelerationRate = 0;
+            GaugePoint = 0;
             _speedMultiplier = maxSpeedMultiplier;
             startedDecelerating = false;
             Results = false;
