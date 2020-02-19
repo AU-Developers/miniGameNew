@@ -98,9 +98,17 @@ namespace Minigame
                 MenuPanel.SetActive(false);
 
             if (GameController.Instance.playerData.stoppingPoint <= 10)
+            {
                 text.text = "Hit";
+            }
+            else if (GameController.Instance.playerData.stoppingPoint <= 20)
+            {
+                text.text = "Good";
+            }
             else
+            {
                 text.text = "Miss";
+            }
         }
     }
 }
