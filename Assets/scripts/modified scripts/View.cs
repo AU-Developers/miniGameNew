@@ -9,6 +9,8 @@ namespace Minigame
         [SerializeField] RectTransform movingBar = null;
         [SerializeField] RectTransform white = null, black = null, red = null;
 
+        [SerializeField] GameObject MenuPanel;
+
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
         private float barPosition
@@ -87,6 +89,11 @@ namespace Minigame
         void Update()
         {
             barPosition = (whiteSize/2) * (GameController.Instance.GaugePoint / 100);
+
+            if (GameController.Instance.Results)
+                MenuPanel.SetActive(true);
+            else
+                MenuPanel.SetActive(false);
         }
     }
 }
