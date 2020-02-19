@@ -26,7 +26,7 @@ namespace Minigame
                 {
                     _instance = (GameController)FindObjectOfType(typeof(GameController));
                 }
-                return _instance;   
+                return _instance;
             }
             set
             {
@@ -37,6 +37,8 @@ namespace Minigame
         [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
         public float GaugePoint { get; private set; } = 0;
 
+        public bool Results { get; private set; } = false;
+
         /// <summary>
         /// Moving States
         /// <para>-1 - Moving Left</para>
@@ -44,10 +46,11 @@ namespace Minigame
         /// <para>1 - Moving Right</para>
         /// </summary>
         [SerializeField] private int movingState = 0;
-        float destinationValue = 0;
+
+        float maxSpeedMultiplier;
 
         bool startedDecelerating;
-        [SerializeField] private float calculatedDistance;
+
         [SerializeField] private float _decelerationRate = 0;
 
         #region MonoBehaviour Methods
@@ -62,6 +65,8 @@ namespace Minigame
                 movingState = -1;
 
             RandomGenerationOfStoppingPoint();
+
+            maxSpeedMultiplier = _speedMultiplier;
         }
         private void FixedUpdate()
         {
@@ -92,21 +97,17 @@ namespace Minigame
                     {
                         if (GaugePoint >= -playerData.stoppingPoint) // Overlapped negative stopping point
                         {
-                            //print("Overlapped negative stopping point");
                             if (GaugePoint >= playerData.stoppingPoint) // Overlapped positive stopping point
                             {
                                 distance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
-                                //print("and overlapped positive stopping point");
                             }
                             else // did not overlap positive stopping point
                             {
                                 distance = playerData.stoppingPoint - GaugePoint;
-                                //print("but did not overlap positive stopping point");
                             }
                         }
                         else // did not overlap negative stopping point
                         {
-                            //print("did not overlap anything");
                             distance = GaugePoint - -playerData.stoppingPoint;
                         }
                     }
@@ -144,7 +145,7 @@ namespace Minigame
                 else if (_speedMultiplier < 0)
                     _speedMultiplier = 0;
                 else
-                    print(GaugePoint);
+                    Results = true;
 
                 if (movingState == 1)
                     GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
@@ -164,6 +165,9 @@ namespace Minigame
             }
         }
 
+        /// <summary>
+        /// Random Value of Stopping Point
+        /// </summary>
         private void RandomGenerationOfStoppingPoint()
         {
             float randomValue = Random.value;
@@ -175,5 +179,17 @@ namespace Minigame
             else
                 playerData.stoppingPoint = Random.Range(21, 100);
         }
+
+        #region Functions for Buttons
+
+        public void PlayAgain()
+        {
+            RandomGenerationOfStoppingPoint();
+            _speedMultiplier = maxSpeedMultiplier;
+            startedDecelerating = false;
+            Results = false;
+        }
+
+        #endregion
     }
 }
