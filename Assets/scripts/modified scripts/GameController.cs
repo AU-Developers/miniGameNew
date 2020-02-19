@@ -176,9 +176,9 @@ namespace Minigame
             float randomValue = Random.value;
 
             if (randomValue <= playerData.perfectChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(0, 10);
+                playerData.stoppingPoint = Random.Range(0, playerData.perfectChanceRange);
             else if (randomValue <= playerData.goodChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(11, 20);
+                playerData.stoppingPoint = Random.Range(11, playerData.goodChanceRange);
             else
                 playerData.stoppingPoint = Random.Range(21, 100);
         }
