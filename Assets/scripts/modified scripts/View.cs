@@ -10,9 +10,16 @@ namespace Minigame
         [SerializeField] RectTransform movingBar = null;
         [SerializeField] RectTransform white = null, black = null, red = null;
 
-        [SerializeField] GameObject MenuPanel;
+        [SerializeField] GameObject menuPanel;
 
         [SerializeField] Text text;
+
+        [SerializeField] GameObject panel;
+
+        AudioSource audioSource;
+        Animator animator;
+
+        [SerializeField] List<AudioClip> soundClips = new List<AudioClip>();
 
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
@@ -86,6 +93,9 @@ namespace Minigame
 
             blackSize = (GameController.Instance.playerData.goodChanceRange / 100) * _whiteSize.x;
             redSize = (GameController.Instance.playerData.perfectChanceRange / 100) * _whiteSize.x;
+
+            audioSource = GetComponent<AudioSource>();
+            animator = panel.GetComponent<Animator>();
         }
 
         void Update()
@@ -93,21 +103,39 @@ namespace Minigame
             barPosition = (whiteSize/2) * (GameController.Instance.GaugePoint / 100);
 
             if (GameController.Instance.Results)
-                MenuPanel.SetActive(true);
+                menuPanel.SetActive(true);
             else
-                MenuPanel.SetActive(false);
+                menuPanel.SetActive(false);
 
-            if (GameController.Instance.playerData.stoppingPoint <= 10)
+
+
+            if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
-                text.text = "Hit";
+                int index = 0;
+                if (GameController.Instance.playerData.stoppingPoint <= 10)
+                {
+                    index = 2;
+                    
+                    text.text = "Hit";
+                }
+                else if (GameController.Instance.playerData.stoppingPoint <= 20)
+                {
+                    index = 1;
+                    text.text = "Good";
+                }
+                else
+                {
+                    index = 0;
+                    text.text = "Miss";
+                }
+
+                animator.SetInteger("state", index+1);
+                audioSource.PlayOneShot(soundClips[index]);
+                GameController.Instance.PlaySoundOnce = false;
             }
-            else if (GameController.Instance.playerData.stoppingPoint <= 20)
+            else if (GameController.Instance.SpeedMultiplier > 0)
             {
-                text.text = "Good";
-            }
-            else
-            {
-                text.text = "Miss";
+                animator.SetInteger("state", 0);
             }
         }
     }

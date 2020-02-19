@@ -37,7 +37,10 @@ namespace Minigame
         [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
         public float GaugePoint { get; private set; } = 0;
 
+        public float SpeedMultiplier{ get { return _speedMultiplier;} }
+
         public bool Results { get; private set; } = false;
+        public bool PlaySoundOnce { get; set; } = false;
 
         /// <summary>
         /// Moving States
@@ -66,8 +69,12 @@ namespace Minigame
         }
         private void FixedUpdate()
         {
-            if (Input.GetKeyDown(input))
+            if (Input.GetKeyDown(input) && !PlaySoundOnce)
+            {
                 startedDecelerating = true;
+                PlaySoundOnce = true;
+            }
+                
 
             MoveGauge();
         }
