@@ -69,6 +69,7 @@ namespace Minigame
         #region MonoBehaviour Methods
         private void Awake()
         {
+            FindingStartingPoint();
             RandomGenerationOfStoppingPoint();
             _instance = this;
             if (!_playerData)
@@ -131,39 +132,41 @@ namespace Minigame
             }
         }
 
+        public float startingPointOfPerfectChanceRange;
+        public float startingPointOfGoodChanceRange;
+        float differenceOfPerfect = 0, differenceOfGood = 0;
+
+        private void FindingStartingPoint()
+        {
+            startingPointOfPerfectChanceRange = playerData.point - playerData.perfectChanceRange;
+            startingPointOfGoodChanceRange = playerData.point - playerData.goodChanceRange;
+
+            if (startingPointOfPerfectChanceRange + playerData.perfectChanceRange >= 100)
+                differenceOfPerfect = (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
+            if (startingPointOfGoodChanceRange + playerData.goodChanceRange >= 100)
+                differenceOfGood = (startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
+
+            if (startingPointOfPerfectChanceRange < 0)
+                startingPointOfPerfectChanceRange = 0;
+            if (startingPointOfGoodChanceRange < 0)
+                startingPointOfGoodChanceRange = 0;
+
+            startingPointOfPerfectChanceRange -= differenceOfPerfect;
+            startingPointOfGoodChanceRange -= differenceOfGood;
+        }
+
         private void GaugeChecker()
         {
             Results = true;
 
-            float startingPointOfPerfectChanceRange =  playerData.point - playerData.perfectChanceRange;
-            float startingPointOfGoodChanceRange =  playerData.point - playerData.goodChanceRange;
-            float differenceOfPerfect = 0, differenceOfGood = 0;
+            print(GaugePoint);
 
-            
-
-            print("Before\nGaugePoint " + GaugePoint + " startingPerfect " + startingPointOfPerfectChanceRange + "  startingGood " + startingPointOfGoodChanceRange);
-
-            if (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2) > 100)
-                differenceOfPerfect = (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
-            if(startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2) > 100)
-                differenceOfGood = (startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
-
-            if(startingPointOfPerfectChanceRange < 0)
-                startingPointOfPerfectChanceRange = 0;
-            if(startingPointOfGoodChanceRange < 0)
-                startingPointOfGoodChanceRange = 0;
-
-            print("After\nGaugePoint " + GaugePoint + " startingPerfect " + (startingPointOfPerfectChanceRange - differenceOfPerfect)
-                + "  startingGood " + (startingPointOfGoodChanceRange - differenceOfGood));
-
-            if (GaugePoint <= startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)  && GaugePoint > startingPointOfPerfectChanceRange - differenceOfPerfect)
-                print("success");
-            else if (GaugePoint <= startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2) && GaugePoint > startingPointOfGoodChanceRange - differenceOfGood)
-                print("good");
+            if (GaugePoint <= startingPointOfPerfectChanceRange + playerData.perfectChanceRange && GaugePoint > startingPointOfPerfectChanceRange)
+                print("success because the staringPoint " + (startingPointOfPerfectChanceRange) + " and the endPoint " + (startingPointOfPerfectChanceRange + playerData.perfectChanceRange));
+            else if (GaugePoint <= startingPointOfGoodChanceRange + playerData.goodChanceRange && GaugePoint > startingPointOfGoodChanceRange)
+                print("good because the staringPoint " + (startingPointOfGoodChanceRange) + " and the endPoint " + (startingPointOfGoodChanceRange + playerData.goodChanceRange));
             else
                 print("failed");
-
-            
         }
 
         private void MoveGauge1()

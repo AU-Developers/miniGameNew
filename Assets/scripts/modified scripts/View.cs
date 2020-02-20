@@ -124,8 +124,8 @@ namespace Minigame
 
             _whiteSize = white.sizeDelta;
 
-            RedSize = (whiteSize / 2) * (GameController.Instance.playerData.point / 100);
-            BlackSize = (whiteSize / 2) * (GameController.Instance.playerData.point / 100);
+            RedSize = whiteSize * (GameController.Instance.startingPointOfPerfectChanceRange / 100);
+            BlackSize = whiteSize * (GameController.Instance.startingPointOfGoodChanceRange / 100);
 
             _redSize = black.sizeDelta;
             _blackSize = black.sizeDelta;
@@ -136,6 +136,8 @@ namespace Minigame
 
         private void Start()
         {
+            print(GameController.Instance.startingPointOfPerfectChanceRange);
+
             ResetPositions();
 
             audioSource = GetComponent<AudioSource>();
@@ -144,11 +146,11 @@ namespace Minigame
 
         void Update()
         {
-            barPosition = (whiteSize / 2) * (GameController.Instance.GaugePoint / 100);
-
+            barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
+            ResetPositions();
             if (GameController.Instance.Resets)
             {
-                ResetPositions();
+                
                 GameController.Instance.Resets = false;
             }
             

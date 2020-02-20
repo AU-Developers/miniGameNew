@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 150
   time: 1
-  point: 100
+  point: 50
   winChanceRange: 20
   goodChanceRange: 30
   perfectChanceRange: 10
-  stoppingPoint: 56.290897
+  stoppingPoint: 88.21759
