@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1954a000a113c55479d9abf8dd70fe66, type: 3}
-  m_Name: Good Luck
+  m_Name: 2
   m_EditorClassIdentifier: 
-  winChanceRange: 60
-  goodChanceRange: 50
-  perfectChanceRange: 12
-  stoppingPoint: 36
+  speed: 200
+  time: 1.5
+  val: 50
+  winChanceRange: 20
+  goodChanceRange: 30
+  perfectChanceRange: 10
+  stoppingPoint: 68.05206

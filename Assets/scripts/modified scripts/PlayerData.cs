@@ -7,6 +7,10 @@ namespace Minigame
     [CreateAssetMenu(menuName = "Player Data", fileName = "New Player Data.asset")]
     public class PlayerData : ScriptableObject
     {
+        [Range(0, 400)] public float speed;
+        [Range(0, 2)] public float time;
+        public float point = 70;
+
         [Range(0, 100)] public float winChanceRange = 20;
         [Range(1, 100)] public float goodChanceRange = 30, perfectChanceRange = 10;
         [SerializeField] public float stoppingPoint;

@@ -41,6 +41,16 @@ namespace Minigame
 
         public bool Results { get; private set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
+        public bool Resets { get; set; } = false;
+
+        [Range(0, 2)] [SerializeField] float time;
+        /*
+         * .5
+         * 1
+         * 1.5
+         * 2
+         * 
+         */
 
         /// <summary>
         /// Moving States
@@ -59,11 +69,16 @@ namespace Minigame
         #region MonoBehaviour Methods
         private void Awake()
         {
+            RandomGenerationOfStoppingPoint();
             _instance = this;
             if (!_playerData)
                 Debug.Log("No Player Data found.");
 
-            RandomGenerationOfStoppingPoint();
+            movingState = 1;
+            //RandomGenerationOfStoppingPoint();
+
+            time = playerData.time;
+            _speedMultiplier = playerData.speed;
 
             maxSpeedMultiplier = _speedMultiplier;
         }
@@ -83,6 +98,75 @@ namespace Minigame
         #endregion
 
         private void MoveGauge()
+        {
+            if (startedDecelerating)
+            {
+                if(_decelerationRate == 0 && _speedMultiplier > 0)
+                    _decelerationRate = _speedMultiplier / time;
+            }
+
+            if (movingState == 1)
+                GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
+            else if (movingState == -1)
+                GaugePoint -= Time.fixedDeltaTime * _speedMultiplier;
+
+            if (_speedMultiplier > 0)
+                _speedMultiplier -= _decelerationRate * Time.fixedDeltaTime;
+            else if (_speedMultiplier < 0)
+                _speedMultiplier = 0;
+            else
+                GaugeChecker();
+
+
+
+            if (GaugePoint > 100)
+            {
+                GaugePoint = 100;
+                movingState = -1;
+            }
+            else if (GaugePoint < 0)
+            {
+                GaugePoint = 0;
+                movingState = 1;
+            }
+        }
+
+        private void GaugeChecker()
+        {
+            Results = true;
+
+            float startingPointOfPerfectChanceRange =  playerData.point - playerData.perfectChanceRange;
+            float startingPointOfGoodChanceRange =  playerData.point - playerData.goodChanceRange;
+            float differenceOfPerfect = 0, differenceOfGood = 0;
+
+            
+
+            print("Before\nGaugePoint " + GaugePoint + " startingPerfect " + startingPointOfPerfectChanceRange + "  startingGood " + startingPointOfGoodChanceRange);
+
+            if (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2) > 100)
+                differenceOfPerfect = (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
+            if(startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2) > 100)
+                differenceOfGood = (startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
+
+            if(startingPointOfPerfectChanceRange < 0)
+                startingPointOfPerfectChanceRange = 0;
+            if(startingPointOfGoodChanceRange < 0)
+                startingPointOfGoodChanceRange = 0;
+
+            print("After\nGaugePoint " + GaugePoint + " startingPerfect " + (startingPointOfPerfectChanceRange - differenceOfPerfect)
+                + "  startingGood " + (startingPointOfGoodChanceRange - differenceOfGood));
+
+            if (GaugePoint <= startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)  && GaugePoint > startingPointOfPerfectChanceRange - differenceOfPerfect)
+                print("success");
+            else if (GaugePoint <= startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2) && GaugePoint > startingPointOfGoodChanceRange - differenceOfGood)
+                print("good");
+            else
+                print("failed");
+
+            
+        }
+
+        private void MoveGauge1()
         {
             if (!startedDecelerating)
             {
@@ -156,7 +240,7 @@ namespace Minigame
                 GaugePoint = 100;
                 movingState = -1;
             }
-            else if (GaugePoint< -100)
+            else if (GaugePoint < -100)
             {
                 GaugePoint = -100;
                 movingState = 1;
@@ -168,17 +252,12 @@ namespace Minigame
         /// </summary>
         private void RandomGenerationOfStoppingPoint()
         {
-            if (Random.value >= .5f)
-                movingState = 1;
-            else
-                movingState = -1;
-
             float randomValue = Random.value;
 
             if (randomValue <= playerData.perfectChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(0, playerData.perfectChanceRange);
+                playerData.stoppingPoint = Random.Range(playerData.perfectChanceRange, playerData.perfectChanceRange * 2);
             else if (randomValue <= playerData.goodChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(playerData.perfectChanceRange+1, playerData.goodChanceRange);
+                playerData.stoppingPoint = Random.Range(playerData.goodChanceRange, playerData.goodChanceRange * 2);
             else
                 playerData.stoppingPoint = Random.Range(playerData.goodChanceRange+1, 100);
         }
@@ -191,11 +270,15 @@ namespace Minigame
         public void PlayAgain()
         {
             RandomGenerationOfStoppingPoint();
+            movingState = 1;
+            time = playerData.time;
+            _speedMultiplier = playerData.speed;
             _decelerationRate = 0;
             GaugePoint = 0;
             _speedMultiplier = maxSpeedMultiplier;
             startedDecelerating = false;
             Results = false;
+            Resets = true;
         }
 
         #endregion

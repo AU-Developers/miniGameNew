@@ -84,15 +84,59 @@ namespace Minigame
             }
         }
 
-        private void Start()
+        private float BlackSize
+        {
+            get
+            {
+                return _blackSize.x;
+            }
+            set
+            {
+                if (value != _blackSize.x)
+                {
+                    _blackSize.x = value;
+                    black.anchoredPosition = _blackSize;
+                }
+            }
+        }
+
+        private float RedSize
+        {
+            get
+            {
+                return _redSize.x;
+            }
+            set
+            {
+                if (value != _redSize.x)
+                {
+                    _redSize.x = value;
+                    red.anchoredPosition = _redSize;
+                }
+            }
+        }
+
+        private void ResetPositions()
         {
             _barPosition.y = movingBar.anchoredPosition.y;
+            _redSize.y = red.anchoredPosition.y;
+            _blackSize.y = black.anchoredPosition.y;
+
             _whiteSize = white.sizeDelta;
-            _blackSize = black.sizeDelta;
+
+            RedSize = (whiteSize / 2) * (GameController.Instance.playerData.point / 100);
+            BlackSize = (whiteSize / 2) * (GameController.Instance.playerData.point / 100);
+
             _redSize = black.sizeDelta;
+            _blackSize = black.sizeDelta;
 
             blackSize = (GameController.Instance.playerData.goodChanceRange / 100) * _whiteSize.x;
             redSize = (GameController.Instance.playerData.perfectChanceRange / 100) * _whiteSize.x;
+        }
+
+        private void Start()
+        {
+            ResetPositions();
 
             audioSource = GetComponent<AudioSource>();
             animator = panel.GetComponent<Animator>();
@@ -100,7 +144,14 @@ namespace Minigame
 
         void Update()
         {
-            barPosition = (whiteSize/2) * (GameController.Instance.GaugePoint / 100);
+            barPosition = (whiteSize / 2) * (GameController.Instance.GaugePoint / 100);
+
+            if (GameController.Instance.Resets)
+            {
+                ResetPositions();
+                GameController.Instance.Resets = false;
+            }
+            
 
             if (GameController.Instance.Results)
                 menuPanel.SetActive(true);
@@ -115,8 +166,7 @@ namespace Minigame
                 if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.perfectChanceRange)
                 {
                     index = 2;
-                    
-                    text.text = "Hit";
+                    text.text = "Success";
                 }
                 else if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.goodChanceRange)
                 {
@@ -126,11 +176,14 @@ namespace Minigame
                 else
                 {
                     index = 0;
-                    text.text = "Miss";
+                    text.text = "Failed";
                 }
 
                 animator.SetInteger("state", index+1);
                 audioSource.PlayOneShot(soundClips[index]);
+
+                
+
                 GameController.Instance.PlaySoundOnce = false;
             }
             else if (GameController.Instance.SpeedMultiplier > 0)
