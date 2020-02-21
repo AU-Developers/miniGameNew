@@ -149,8 +149,8 @@ namespace Minigame
             }
             else
             {
-                btnPlay.SetActive(false);
-                btnExit.SetActive(true);
+                btnPlay.SetActive(true);
+                btnExit.SetActive(false);
             }
                 
 
