@@ -39,6 +39,10 @@ namespace Minigame
 
         public float SpeedMultiplier{ get { return _speedMultiplier;} }
 
+        public float StartingPointOfPerfectChanceRange { get; private set; } = 0;
+        public float StartingPointOfGoodChanceRange { get; private set; } = 0;
+        float differenceOfPerfect = 0, differenceOfGood = 0;
+
         public bool Results { get; private set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
         public bool Resets { get; set; } = false;
@@ -70,7 +74,6 @@ namespace Minigame
         private void Awake()
         {
             FindingStartingPoint();
-            RandomGenerationOfStoppingPoint();
             _instance = this;
             if (!_playerData)
                 Debug.Log("No Player Data found.");
@@ -90,7 +93,6 @@ namespace Minigame
                 startedDecelerating = true;
                 PlaySoundOnce = true;
             }
-                
 
             MoveGauge();
         }
@@ -116,7 +118,7 @@ namespace Minigame
             else if (_speedMultiplier < 0)
                 _speedMultiplier = 0;
             else
-                GaugeChecker();
+                Results = true;
 
 
 
@@ -132,137 +134,25 @@ namespace Minigame
             }
         }
 
-        public float startingPointOfPerfectChanceRange;
-        public float startingPointOfGoodChanceRange;
-        float differenceOfPerfect = 0, differenceOfGood = 0;
-
         private void FindingStartingPoint()
         {
-            startingPointOfPerfectChanceRange = playerData.point - playerData.perfectChanceRange;
-            startingPointOfGoodChanceRange = playerData.point - playerData.goodChanceRange;
+            StartingPointOfPerfectChanceRange = playerData.point - playerData.perfectChanceRange;
+            StartingPointOfGoodChanceRange = playerData.point - playerData.goodChanceRange;
 
-            if (startingPointOfPerfectChanceRange + playerData.perfectChanceRange >= 100)
-                differenceOfPerfect = (startingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
-            if (startingPointOfGoodChanceRange + playerData.goodChanceRange >= 100)
-                differenceOfGood = (startingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
+            if (StartingPointOfPerfectChanceRange + playerData.perfectChanceRange >= 100)
+                differenceOfPerfect = (StartingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
+                //StartingPointOfPerfectChanceRange = 100;
+            if (StartingPointOfGoodChanceRange + playerData.goodChanceRange >= 100)
+                //StartingPointOfGoodChanceRange = 100;
+                differenceOfGood = (StartingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
 
-            if (startingPointOfPerfectChanceRange < 0)
-                startingPointOfPerfectChanceRange = 0;
-            if (startingPointOfGoodChanceRange < 0)
-                startingPointOfGoodChanceRange = 0;
+            if (StartingPointOfPerfectChanceRange < 0)
+                StartingPointOfPerfectChanceRange = 0;
+            if (StartingPointOfGoodChanceRange < 0)
+                StartingPointOfGoodChanceRange = 0;
 
-            startingPointOfPerfectChanceRange -= differenceOfPerfect;
-            startingPointOfGoodChanceRange -= differenceOfGood;
-        }
-
-        private void GaugeChecker()
-        {
-            Results = true;
-
-            print(GaugePoint);
-
-            if (GaugePoint <= startingPointOfPerfectChanceRange + playerData.perfectChanceRange && GaugePoint > startingPointOfPerfectChanceRange)
-                print("success because the staringPoint " + (startingPointOfPerfectChanceRange) + " and the endPoint " + (startingPointOfPerfectChanceRange + playerData.perfectChanceRange));
-            else if (GaugePoint <= startingPointOfGoodChanceRange + playerData.goodChanceRange && GaugePoint > startingPointOfGoodChanceRange)
-                print("good because the staringPoint " + (startingPointOfGoodChanceRange) + " and the endPoint " + (startingPointOfGoodChanceRange + playerData.goodChanceRange));
-            else
-                print("failed");
-        }
-
-        private void MoveGauge1()
-        {
-            if (!startedDecelerating)
-            {
-                if (movingState == 1)
-                    GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
-                else if (movingState == -1)
-                    GaugePoint -= Time.fixedDeltaTime * _speedMultiplier;
-            }
-            else
-            {
-                float distance = 0;
-                if (_decelerationRate == 0 && _speedMultiplier > 0)
-                {
-                    if (movingState == 1) // Moving right
-                    {
-                        if (GaugePoint >= -playerData.stoppingPoint) // Overlapped negative stopping point
-                        {
-                            if (GaugePoint >= playerData.stoppingPoint) // Overlapped positive stopping point
-                            {
-                                distance = (100 - GaugePoint) + (100 - playerData.stoppingPoint);
-                            }
-                            else // did not overlap positive stopping point
-                            {
-                                distance = playerData.stoppingPoint - GaugePoint;
-                            }
-                        }
-                        else // did not overlap negative stopping point
-                        {
-                            distance = GaugePoint - -playerData.stoppingPoint;
-                        }
-                    }
-                    else if (movingState == -1)
-                    {
-                        if (GaugePoint <= playerData.stoppingPoint) // Overlapped positive stopping point
-                        {
-                            if (GaugePoint <= -playerData.stoppingPoint) // Overlapped negative stopping point
-                            {
-                                distance = (-100 - GaugePoint) + (-100 - -playerData.stoppingPoint);
-                            }
-                            else // did not overlap negative stopping point
-                            {
-                                distance = -playerData.stoppingPoint - GaugePoint;
-                            }
-                        }
-                        else // did not overlap positive
-                        {
-                            distance = GaugePoint - playerData.stoppingPoint;
-                        }
-                    }
-
-                    distance = Mathf.Abs(distance);
-
-                    _decelerationRate = (_speedMultiplier * _speedMultiplier)/(distance * 2);
-                }
-
-                if (_speedMultiplier > 0)
-                    _speedMultiplier -= _decelerationRate * Time.fixedDeltaTime;
-                else if (_speedMultiplier < 0)
-                    _speedMultiplier = 0;
-                else
-                    Results = true;
-
-                if (movingState == 1)
-                    GaugePoint += Time.fixedDeltaTime * _speedMultiplier;
-                else if (movingState == -1)
-                    GaugePoint -= Time.fixedDeltaTime * _speedMultiplier;
-            }
-
-            if (GaugePoint > 100)
-            {
-                GaugePoint = 100;
-                movingState = -1;
-            }
-            else if (GaugePoint < -100)
-            {
-                GaugePoint = -100;
-                movingState = 1;
-            }
-        }
-
-        /// <summary>
-        /// Random Value of Stopping Point
-        /// </summary>
-        private void RandomGenerationOfStoppingPoint()
-        {
-            float randomValue = Random.value;
-
-            if (randomValue <= playerData.perfectChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(playerData.perfectChanceRange, playerData.perfectChanceRange * 2);
-            else if (randomValue <= playerData.goodChanceRange / 100)
-                playerData.stoppingPoint = Random.Range(playerData.goodChanceRange, playerData.goodChanceRange * 2);
-            else
-                playerData.stoppingPoint = Random.Range(playerData.goodChanceRange+1, 100);
+            StartingPointOfPerfectChanceRange -= differenceOfPerfect;
+            StartingPointOfGoodChanceRange -= differenceOfGood;
         }
 
         #region Functions for Buttons
@@ -272,7 +162,7 @@ namespace Minigame
         /// </summary>
         public void PlayAgain()
         {
-            RandomGenerationOfStoppingPoint();
+            Resets = true;
             movingState = 1;
             time = playerData.time;
             _speedMultiplier = playerData.speed;
@@ -281,7 +171,6 @@ namespace Minigame
             _speedMultiplier = maxSpeedMultiplier;
             startedDecelerating = false;
             Results = false;
-            Resets = true;
         }
 
         #endregion

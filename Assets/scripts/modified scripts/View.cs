@@ -124,8 +124,8 @@ namespace Minigame
 
             _whiteSize = white.sizeDelta;
 
-            RedSize = whiteSize * (GameController.Instance.startingPointOfPerfectChanceRange / 100);
-            BlackSize = whiteSize * (GameController.Instance.startingPointOfGoodChanceRange / 100);
+            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.playerData.perfectChanceRange/2)) / 100);
+            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange +  (GameController.Instance.playerData.goodChanceRange/2))/ 100);
 
             _redSize = black.sizeDelta;
             _blackSize = black.sizeDelta;
@@ -136,8 +136,6 @@ namespace Minigame
 
         private void Start()
         {
-            print(GameController.Instance.startingPointOfPerfectChanceRange);
-
             ResetPositions();
 
             audioSource = GetComponent<AudioSource>();
@@ -147,10 +145,10 @@ namespace Minigame
         void Update()
         {
             barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
-            ResetPositions();
+            
             if (GameController.Instance.Resets)
             {
-                
+                ResetPositions();
                 GameController.Instance.Resets = false;
             }
             
@@ -165,12 +163,15 @@ namespace Minigame
             if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
                 int index = 0;
-                if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.perfectChanceRange)
+
+                if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfPerfectChanceRange + GameController.Instance.playerData.perfectChanceRange 
+                    && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfPerfectChanceRange)
                 {
                     index = 2;
                     text.text = "Success";
                 }
-                else if (GameController.Instance.playerData.stoppingPoint <= GameController.Instance.playerData.goodChanceRange)
+                else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance.playerData.goodChanceRange 
+                    && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfGoodChanceRange)
                 {
                     index = 1;
                     text.text = "Good";
@@ -184,8 +185,6 @@ namespace Minigame
                 animator.SetInteger("state", index+1);
                 audioSource.PlayOneShot(soundClips[index]);
 
-                
-
                 GameController.Instance.PlaySoundOnce = false;
             }
             else if (GameController.Instance.SpeedMultiplier > 0)
@@ -193,5 +192,6 @@ namespace Minigame
                 animator.SetInteger("state", 0);
             }
         }
+
     }
 }

@@ -5602,13 +5602,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   input: 32
-  _playerData: {fileID: 11400000, guid: 6f4def42fb097bd4abadd2b36a35acd6, type: 2}
+  _playerData: {fileID: 11400000, guid: e1ae1b3949646d84e97eed856a3d0d4f, type: 2}
   _speedMultiplier: 205
   time: 2
   movingState: 0
   _decelerationRate: 0
-  startingPointOfPerfectChanceRange: 0
-  startingPointOfGoodChanceRange: 0
 --- !u!4 &1289377567
 Transform:
   m_ObjectHideFlags: 0
