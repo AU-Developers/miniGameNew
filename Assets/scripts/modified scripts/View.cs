@@ -134,8 +134,6 @@ namespace Minigame
 
         private void Start()
         {
-            ResetPositions();
-
             audioSource = GetComponent<AudioSource>();
             animator = panel.GetComponent<Animator>();
         }
@@ -177,9 +175,9 @@ namespace Minigame
                 animator.SetInteger("state", index+1);
                 audioSource.PlayOneShot(soundClips[index]);
 
-                GameController.Instance.PlaySoundOnce = false;
+                //GameController.Instance.PlaySoundOnce = false;
             }
-            else if (GameController.Instance.SpeedMultiplier > 0)
+            else
             {
                 animator.SetInteger("state", 0);
             }

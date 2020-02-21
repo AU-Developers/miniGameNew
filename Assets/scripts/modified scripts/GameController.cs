@@ -158,11 +158,11 @@ namespace Minigame
             if (Ranks < 4)
                 _levelData = Resources.Load<LevelData>("ScriptableObjects/" + Ranks);
             else
-                return;
+                PlayGame = false;
             if (Chances <= 0)
-                return;
+                PlayGame = false;
             if (HP <= 0)
-                return;
+                PlayGame = false;
 
             _LevelData.point = Random.Range(0, 101);
             Resets = true;
@@ -174,6 +174,7 @@ namespace Minigame
             startedDecelerating = false;
             RankUps = false;
             Chances--;
+            PlaySoundOnce = false;
             FindingStartingPoint();
         }
 
@@ -182,6 +183,8 @@ namespace Minigame
         public void Play()
         {
             Ranks = 0;
+            Chances = 5;
+            HP = 100;
             RankUp();
             PlayGame = true;
         }
