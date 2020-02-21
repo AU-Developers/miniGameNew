@@ -10,7 +10,7 @@ namespace Minigame
         [SerializeField] RectTransform movingBar = null;
         [SerializeField] RectTransform white = null, black = null, red = null;
 
-        [SerializeField] Text text;
+        [SerializeField] Text text,hpText,chancesText;
 
         [SerializeField] GameObject panel,btnPlay,btnExit;
 
@@ -142,6 +142,9 @@ namespace Minigame
         {
             barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
 
+            hpText.text = "HP:" + GameController.Instance.HP;
+            chancesText.text = "Tries: " + GameController.Instance.Chances;
+
             if (GameController.Instance.PlayGame)
             {
                 btnPlay.SetActive(false);
@@ -168,31 +171,33 @@ namespace Minigame
                     && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfPerfectChanceRange)
                 {
                     index = 2;
-                    text.text = "Success";
                     GameController.Instance.RankUps = true;
                 }
                 else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance._LevelData.goodChanceRange 
                     && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfGoodChanceRange)
                 {
                     index = 1;
-                    text.text = "Good";
                     GameController.Instance.RankUps = true;
                 }
                 else
                 {
                     index = 0;
-                    text.text = "Failed";
                 }
 
                 animator.SetInteger("state", index+1);
                 audioSource.PlayOneShot(soundClips[index]);
-
-                //GameController.Instance.PlaySoundOnce = false;
             }
             else
             {
                 animator.SetInteger("state", 0);
             }
+
+            if(GameController.Instance.Ranks > 3)
+                text.text = "Success";
+            else if(GameController.Instance.Ranks < 1)
+                text.text = "";
+            else
+                text.text = "Failed";
         }
     }
 }

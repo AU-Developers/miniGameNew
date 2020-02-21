@@ -89,8 +89,11 @@ namespace Minigame
                 PlaySoundOnce = true;
             }
 
-            if (PlayGame)
+            if (PlayGame && HP > 0)
                 MoveGauge();
+
+            if (HP < 0)
+                HP = 0;
         }
 
         #endregion
@@ -119,13 +122,20 @@ namespace Minigame
             {
                 GaugePoint = 100;
                 movingState = -1;
-                HP -= _LevelData.penalty;
+                if (HP > 0)
+                    HP -= _LevelData.penalty;
+                else
+                    HP = 0;
             }
             else if (GaugePoint < 0)
             {
                 GaugePoint = 0;
                 movingState = 1;
-                HP -= _LevelData.penalty;
+                if (HP > 0)
+                    HP -= _LevelData.penalty;
+                else
+                    HP = 0;
+
             }
         }
 
