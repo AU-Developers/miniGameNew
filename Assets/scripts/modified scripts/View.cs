@@ -12,7 +12,7 @@ namespace Minigame
 
         [SerializeField] Text text;
 
-        [SerializeField] GameObject panel;
+        [SerializeField] GameObject panel,btnPlay,btnExit;
 
         AudioSource audioSource;
         Animator animator;
@@ -142,6 +142,18 @@ namespace Minigame
         {
             barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
 
+            if (GameController.Instance.PlayGame)
+            {
+                btnPlay.SetActive(false);
+                btnExit.SetActive(true);
+            }
+            else
+            {
+                btnPlay.SetActive(false);
+                btnExit.SetActive(true);
+            }
+                
+
             if (GameController.Instance.Resets)
             {
                 ResetPositions();
@@ -182,6 +194,5 @@ namespace Minigame
                 animator.SetInteger("state", 0);
             }
         }
-
     }
 }
