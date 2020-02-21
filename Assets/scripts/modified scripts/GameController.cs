@@ -7,12 +7,12 @@ namespace Minigame
     public class GameController : MonoBehaviour
     {
         [SerializeField] private KeyCode input = KeyCode.Space;
-        [SerializeField] private PlayerData _playerData = null;
-        public PlayerData playerData
+        [SerializeField] private LevelData _levelData = null;
+        public LevelData _LevelData
         {
             get
             {
-                return _playerData;
+                return _levelData;
             }
         }
 
@@ -46,8 +46,12 @@ namespace Minigame
         public bool RankUps { get; set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
         public bool Resets { get; set; } = false;
+        public int Chances { get; set; } = 5;
+        public int Ranks { get; set; } = 0;
+        public int HP { get; set; } = 100;
+        public bool PlayGame { get; set; } = false;
 
-        int ranks;
+        bool penalty;
 
         [Range(0, 2)] [SerializeField] float time;
         /*
@@ -71,12 +75,12 @@ namespace Minigame
         [SerializeField] private float _decelerationRate = 0;
 
         #region MonoBehaviour Methods
+
         private void Awake()
         {
-            RankUp();
-
             _instance = this;
         }
+
         private void FixedUpdate()
         {
             if (Input.GetKeyDown(input) && !PlaySoundOnce)
@@ -85,11 +89,9 @@ namespace Minigame
                 PlaySoundOnce = true;
             }
 
-            MoveGauge();
-
-            print(playerData);
+            if (PlayGame)
+                MoveGauge();
         }
-
 
         #endregion
 
@@ -117,25 +119,25 @@ namespace Minigame
             {
                 GaugePoint = 100;
                 movingState = -1;
+                HP -= _LevelData.penalty;
             }
             else if (GaugePoint < 0)
             {
                 GaugePoint = 0;
                 movingState = 1;
+                HP -= _LevelData.penalty;
             }
         }
 
         private void FindingStartingPoint()
         {
-            StartingPointOfPerfectChanceRange = playerData.point - playerData.perfectChanceRange;
-            StartingPointOfGoodChanceRange = playerData.point - playerData.goodChanceRange;
+            StartingPointOfPerfectChanceRange = _LevelData.point - _LevelData.perfectChanceRange;
+            StartingPointOfGoodChanceRange = _LevelData.point - _LevelData.goodChanceRange;
 
-            if (StartingPointOfPerfectChanceRange + playerData.perfectChanceRange > 100)
-                differenceOfPerfect = (StartingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
-                //StartingPointOfPerfectChanceRange = 100;
-            if (StartingPointOfGoodChanceRange + playerData.goodChanceRange > 100)
-                //StartingPointOfGoodChanceRange = 100;
-                differenceOfGood = (StartingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
+            if (StartingPointOfPerfectChanceRange + _LevelData.perfectChanceRange > 100)
+                differenceOfPerfect = (StartingPointOfPerfectChanceRange + (_LevelData.perfectChanceRange * 2)) - 100;
+            if (StartingPointOfGoodChanceRange + _LevelData.goodChanceRange > 100)
+                differenceOfGood = (StartingPointOfGoodChanceRange + (_LevelData.goodChanceRange * 2)) - 100;
 
             if (StartingPointOfPerfectChanceRange < 0)
                 StartingPointOfPerfectChanceRange = 0;
@@ -146,28 +148,47 @@ namespace Minigame
             StartingPointOfGoodChanceRange -= differenceOfGood;
         }
 
-        #region Functions for Buttons
-
         /// <summary>
         /// Reseting values to play again
         /// </summary>
-        public void RankUp()
+        private void RankUp()
         {
-            if(RankUps)
-                ranks++;
-            if (ranks < 4)
-                _playerData = Resources.Load<PlayerData>("ScriptableObjects/" + ranks);
+            if (RankUps)
+                Ranks++;
+            if (Ranks < 4)
+                _levelData = Resources.Load<LevelData>("ScriptableObjects/" + Ranks);
             else
                 return;
+            if (Chances <= 0)
+                return;
+            if (HP <= 0)
+                return;
+
+            _LevelData.point = Random.Range(0, 101);
             Resets = true;
             movingState = 1;
-            time = playerData.time;
-            _speedMultiplier = playerData.speed;
+            time = _LevelData.time;
+            _speedMultiplier = _LevelData.speed;
             _decelerationRate = 0;
             GaugePoint = 0;
             startedDecelerating = false;
             RankUps = false;
+            Chances--;
             FindingStartingPoint();
+        }
+
+        #region Functions for Buttons
+
+        public void Play()
+        {
+            Ranks = 0;
+            RankUp();
+            PlayGame = true;
+        }
+
+        public void Exit()
+        {
+            PlayGame = false;
         }
 
         #endregion

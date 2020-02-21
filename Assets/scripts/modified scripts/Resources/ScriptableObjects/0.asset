@@ -15,7 +15,6 @@ MonoBehaviour:
   speed: 100
   time: 0.5
   point: 100
-  winChanceRange: 20
-  goodChanceRange: 30
-  perfectChanceRange: 10
-  stoppingPoint: 80.14041
+  penalty: 5
+  goodChanceRange: 50
+  perfectChanceRange: 15

@@ -122,17 +122,14 @@ namespace Minigame
 
             _whiteSize = white.sizeDelta;
 
-            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.playerData.perfectChanceRange / 2)) / 100);
-            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance.playerData.goodChanceRange / 2)) / 100);
+            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance._LevelData.perfectChanceRange / 2)) / 100);
+            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance._LevelData.goodChanceRange / 2)) / 100);
 
             _redSize = black.sizeDelta;
             _blackSize = black.sizeDelta;
 
-            blackSize = (GameController.Instance.playerData.goodChanceRange / 100) * _whiteSize.x;
-            redSize = (GameController.Instance.playerData.perfectChanceRange / 100) * _whiteSize.x;
-
-            print("Red " + RedSize);
-            print("Black " + BlackSize);
+            blackSize = (GameController.Instance._LevelData.goodChanceRange / 100) * _whiteSize.x;
+            redSize = (GameController.Instance._LevelData.perfectChanceRange / 100) * _whiteSize.x;
         }
 
         private void Start()
@@ -157,14 +154,14 @@ namespace Minigame
             {
                 int index = 0;
 
-                if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfPerfectChanceRange + GameController.Instance.playerData.perfectChanceRange 
+                if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfPerfectChanceRange + GameController.Instance._LevelData.perfectChanceRange 
                     && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfPerfectChanceRange)
                 {
                     index = 2;
                     text.text = "Success";
                     GameController.Instance.RankUps = true;
                 }
-                else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance.playerData.goodChanceRange 
+                else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance._LevelData.goodChanceRange 
                     && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfGoodChanceRange)
                 {
                     index = 1;
