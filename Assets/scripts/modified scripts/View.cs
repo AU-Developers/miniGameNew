@@ -10,8 +10,6 @@ namespace Minigame
         [SerializeField] RectTransform movingBar = null;
         [SerializeField] RectTransform white = null, black = null, red = null;
 
-        [SerializeField] GameObject menuPanel;
-
         [SerializeField] Text text;
 
         [SerializeField] GameObject panel;
@@ -124,14 +122,17 @@ namespace Minigame
 
             _whiteSize = white.sizeDelta;
 
-            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.playerData.perfectChanceRange/2)) / 100);
-            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange +  (GameController.Instance.playerData.goodChanceRange/2))/ 100);
+            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.playerData.perfectChanceRange / 2)) / 100);
+            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance.playerData.goodChanceRange / 2)) / 100);
 
             _redSize = black.sizeDelta;
             _blackSize = black.sizeDelta;
 
             blackSize = (GameController.Instance.playerData.goodChanceRange / 100) * _whiteSize.x;
             redSize = (GameController.Instance.playerData.perfectChanceRange / 100) * _whiteSize.x;
+
+            print("Red " + RedSize);
+            print("Black " + BlackSize);
         }
 
         private void Start()
@@ -145,20 +146,12 @@ namespace Minigame
         void Update()
         {
             barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
-            
+
             if (GameController.Instance.Resets)
             {
                 ResetPositions();
                 GameController.Instance.Resets = false;
             }
-            
-
-            if (GameController.Instance.Results)
-                menuPanel.SetActive(true);
-            else
-                menuPanel.SetActive(false);
-
-
 
             if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
@@ -169,12 +162,14 @@ namespace Minigame
                 {
                     index = 2;
                     text.text = "Success";
+                    GameController.Instance.RankUps = true;
                 }
                 else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance.playerData.goodChanceRange 
                     && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfGoodChanceRange)
                 {
                     index = 1;
                     text.text = "Good";
+                    GameController.Instance.RankUps = true;
                 }
                 else
                 {

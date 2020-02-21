@@ -43,9 +43,11 @@ namespace Minigame
         public float StartingPointOfGoodChanceRange { get; private set; } = 0;
         float differenceOfPerfect = 0, differenceOfGood = 0;
 
-        public bool Results { get; private set; } = false;
+        public bool RankUps { get; set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
         public bool Resets { get; set; } = false;
+
+        int ranks;
 
         [Range(0, 2)] [SerializeField] float time;
         /*
@@ -64,8 +66,6 @@ namespace Minigame
         /// </summary>
         [SerializeField] private int movingState = 0;
 
-        float maxSpeedMultiplier;
-
         bool startedDecelerating;
 
         [SerializeField] private float _decelerationRate = 0;
@@ -73,18 +73,9 @@ namespace Minigame
         #region MonoBehaviour Methods
         private void Awake()
         {
-            FindingStartingPoint();
+            RankUp();
+
             _instance = this;
-            if (!_playerData)
-                Debug.Log("No Player Data found.");
-
-            movingState = 1;
-            //RandomGenerationOfStoppingPoint();
-
-            time = playerData.time;
-            _speedMultiplier = playerData.speed;
-
-            maxSpeedMultiplier = _speedMultiplier;
         }
         private void FixedUpdate()
         {
@@ -95,6 +86,8 @@ namespace Minigame
             }
 
             MoveGauge();
+
+            print(playerData);
         }
 
 
@@ -118,9 +111,7 @@ namespace Minigame
             else if (_speedMultiplier < 0)
                 _speedMultiplier = 0;
             else
-                Results = true;
-
-
+                RankUp();
 
             if (GaugePoint > 100)
             {
@@ -139,10 +130,10 @@ namespace Minigame
             StartingPointOfPerfectChanceRange = playerData.point - playerData.perfectChanceRange;
             StartingPointOfGoodChanceRange = playerData.point - playerData.goodChanceRange;
 
-            if (StartingPointOfPerfectChanceRange + playerData.perfectChanceRange >= 100)
+            if (StartingPointOfPerfectChanceRange + playerData.perfectChanceRange > 100)
                 differenceOfPerfect = (StartingPointOfPerfectChanceRange + (playerData.perfectChanceRange * 2)) - 100;
                 //StartingPointOfPerfectChanceRange = 100;
-            if (StartingPointOfGoodChanceRange + playerData.goodChanceRange >= 100)
+            if (StartingPointOfGoodChanceRange + playerData.goodChanceRange > 100)
                 //StartingPointOfGoodChanceRange = 100;
                 differenceOfGood = (StartingPointOfGoodChanceRange + (playerData.goodChanceRange * 2)) - 100;
 
@@ -160,17 +151,23 @@ namespace Minigame
         /// <summary>
         /// Reseting values to play again
         /// </summary>
-        public void PlayAgain()
+        public void RankUp()
         {
+            if(RankUps)
+                ranks++;
+            if (ranks < 4)
+                _playerData = Resources.Load<PlayerData>("ScriptableObjects/" + ranks);
+            else
+                return;
             Resets = true;
             movingState = 1;
             time = playerData.time;
             _speedMultiplier = playerData.speed;
             _decelerationRate = 0;
             GaugePoint = 0;
-            _speedMultiplier = maxSpeedMultiplier;
             startedDecelerating = false;
-            Results = false;
+            RankUps = false;
+            FindingStartingPoint();
         }
 
         #endregion
