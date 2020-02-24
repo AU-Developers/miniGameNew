@@ -39,10 +39,21 @@ namespace Minigame
 
         public float SpeedMultiplier{ get { return _speedMultiplier;} }
 
+        /// <summary>
+        /// Starting point of red object
+        /// </summary>
         public float StartingPointOfPerfectChanceRange { get; private set; } = 0;
+        /// <summary>
+        /// Starting point of black object
+        /// </summary>
         public float StartingPointOfGoodChanceRange { get; private set; } = 0;
-        float differenceOfPerfect = 0, differenceOfGood = 0;
-
+        /// <summary>
+        /// if the starting points are over 100 the exceeding number will be the offset
+        /// </summary>
+        float perfectExceedingOffset = 0, goodExceedingOffset = 0;
+        /// <summary>
+        /// 
+        /// </summary>
         public bool RankUps { get; set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
         public bool Resets { get; set; } = false;
@@ -122,40 +133,45 @@ namespace Minigame
             {
                 GaugePoint = 100;
                 movingState = -1;
-                if (HP > 0)
-                    HP -= _LevelData.penalty;
-                else
-                    HP = 0;
+                if (!startedDecelerating)
+                {
+                    if (HP > 0)
+                        HP -= _LevelData.penalty;
+                    else
+                        HP = 0;
+                }
             }
             else if (GaugePoint < 0)
             {
                 GaugePoint = 0;
                 movingState = 1;
-                if (HP > 0)
-                    HP -= _LevelData.penalty;
-                else
-                    HP = 0;
-
+                if (!startedDecelerating)
+                {
+                    if (HP > 0)
+                        HP -= _LevelData.penalty;
+                    else
+                        HP = 0;
+                }
             }
         }
 
         private void FindingStartingPoint()
         {
-            StartingPointOfPerfectChanceRange = _LevelData.point - _LevelData.perfectChanceRange;
-            StartingPointOfGoodChanceRange = _LevelData.point - _LevelData.goodChanceRange;
+            StartingPointOfPerfectChanceRange = _LevelData.position - _LevelData.perfectChanceRange;
+            StartingPointOfGoodChanceRange = _LevelData.position - _LevelData.goodChanceRange;
 
             if (StartingPointOfPerfectChanceRange + _LevelData.perfectChanceRange > 100)
-                differenceOfPerfect = (StartingPointOfPerfectChanceRange + (_LevelData.perfectChanceRange * 2)) - 100;
+                perfectExceedingOffset = (StartingPointOfPerfectChanceRange + (_LevelData.perfectChanceRange * 2)) - 100;
             if (StartingPointOfGoodChanceRange + _LevelData.goodChanceRange > 100)
-                differenceOfGood = (StartingPointOfGoodChanceRange + (_LevelData.goodChanceRange * 2)) - 100;
+                goodExceedingOffset = (StartingPointOfGoodChanceRange + (_LevelData.goodChanceRange * 2)) - 100;
 
             if (StartingPointOfPerfectChanceRange < 0)
                 StartingPointOfPerfectChanceRange = 0;
             if (StartingPointOfGoodChanceRange < 0)
                 StartingPointOfGoodChanceRange = 0;
 
-            StartingPointOfPerfectChanceRange -= differenceOfPerfect;
-            StartingPointOfGoodChanceRange -= differenceOfGood;
+            StartingPointOfPerfectChanceRange -= perfectExceedingOffset;
+            StartingPointOfGoodChanceRange -= goodExceedingOffset;
         }
 
         /// <summary>
@@ -174,7 +190,7 @@ namespace Minigame
             if (HP <= 0)
                 PlayGame = false;
 
-            _LevelData.point = Random.Range(0, 101);
+            _LevelData.position = Random.Range(0, 101);
             Resets = true;
             movingState = 1;
             time = _LevelData.time;
