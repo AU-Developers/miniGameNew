@@ -8,7 +8,7 @@ namespace Minigame
     {
         [SerializeField] private KeyCode input = KeyCode.Space;
         [SerializeField] private LevelData _levelData = null;
-        public LevelData _LevelData
+        public LevelData LevelData
         {
             get
             {
@@ -55,15 +55,14 @@ namespace Minigame
         /// <summary>
         /// 
         /// </summary>
-        public bool RankUps { get; set; } = false;
-        public bool PlaySoundOnce { get; set; } = false;
-        public bool Resets { get; set; } = false;
-        public int Attempts { get; set; } = 5;
-        public int Ranks { get; set; } = 0;
-        public int HP { get; set; } = 100;
-        public bool PlayGame { get; set; } = false;
-
-        bool penalty;
+        public bool RankUps { get; private set; } = false;
+        public bool PlaySoundOnce { get; private set; } = false;
+        public bool Resets { get; private set; } = false;
+        public int Attempts { get; private set; } = 5;
+        public int Ranks { get; private set; } = 0;
+        public int HP { get; private set; } = 100;
+        public bool PlayGame { get; private set; } = false;
+        public int Score { get; private set; }
 
         [Range(0, 2)] [SerializeField] float time;
         /*
@@ -131,20 +130,23 @@ namespace Minigame
                 _speedMultiplier = 0;
             else
             {
-
-                if (GaugePoint <= StartingPointOfPerfectChanceRange + _LevelData.perfectChanceRange
+                //Landed on Perfect
+                if (GaugePoint <= StartingPointOfPerfectChanceRange + LevelData.perfectChanceRange
                     && GaugePoint > StartingPointOfPerfectChanceRange)
                 {
                     ScoreType = 2;
                     RankUps = true;
                     Ranks++;
+                    Score += 10;
                 }
-                else if (GaugePoint <= StartingPointOfGoodChanceRange + _LevelData.goodChanceRange
+                //Landed on Good
+                else if (GaugePoint <= StartingPointOfGoodChanceRange + LevelData.goodChanceRange
                     && GaugePoint > StartingPointOfGoodChanceRange)
                 {
                     ScoreType = 1;
                     RankUps = true;
                     Ranks++;
+                    Score += 5;
                 }
                 else
                 {
@@ -160,7 +162,7 @@ namespace Minigame
                 if (!startedDecelerating)
                 {
                     if (HP > 0)
-                        HP -= _LevelData.penalty;
+                        HP -= LevelData.penalty;
                     else
                         HP = 0;
                 }
@@ -172,7 +174,7 @@ namespace Minigame
                 if (!startedDecelerating)
                 {
                     if (HP > 0)
-                        HP -= _LevelData.penalty;
+                        HP -= LevelData.penalty;
                     else
                         HP = 0;
                 }
@@ -181,13 +183,13 @@ namespace Minigame
 
         private void FindingStartingPoint()
         {
-            StartingPointOfPerfectChanceRange = _LevelData.position - _LevelData.perfectChanceRange;
-            StartingPointOfGoodChanceRange = _LevelData.position - _LevelData.goodChanceRange;
+            StartingPointOfPerfectChanceRange = LevelData.position - LevelData.perfectChanceRange;
+            StartingPointOfGoodChanceRange = LevelData.position - LevelData.goodChanceRange;
 
-            if (StartingPointOfPerfectChanceRange + _LevelData.perfectChanceRange > 100)
-                perfectExceedingOffset = (StartingPointOfPerfectChanceRange + (_LevelData.perfectChanceRange * 2)) - 100;
-            if (StartingPointOfGoodChanceRange + _LevelData.goodChanceRange > 100)
-                goodExceedingOffset = (StartingPointOfGoodChanceRange + (_LevelData.goodChanceRange * 2)) - 100;
+            if (StartingPointOfPerfectChanceRange + LevelData.perfectChanceRange > 100)
+                perfectExceedingOffset = (StartingPointOfPerfectChanceRange + (LevelData.perfectChanceRange * 2)) - 100;
+            if (StartingPointOfGoodChanceRange + LevelData.goodChanceRange > 100)
+                goodExceedingOffset = (StartingPointOfGoodChanceRange + (LevelData.goodChanceRange * 2)) - 100;
 
             if (StartingPointOfPerfectChanceRange < 0)
                 StartingPointOfPerfectChanceRange = 0;
@@ -215,13 +217,14 @@ namespace Minigame
                 PlayGame = false;
 
 
-
-            _LevelData.position = Random.Range(0, 101);
+            print("Before: " + LevelData.position);
+            LevelData.position = Random.Range(0, 101);
+            print("After Random: " + LevelData.position);
             Resets = true;
             movingState = 1;
-            time = _LevelData.time;
+            time = LevelData.time;
             _decelerationRate = 0;
-            GaugePoint = 0;
+            GaugePoint = 0; 
             startedDecelerating = false;
             RankUps = false;
             Attempts--;
@@ -230,14 +233,20 @@ namespace Minigame
 
             yield return new WaitForFixedUpdate();
             Resets = false;
-            _speedMultiplier = _LevelData.speed;
+            _speedMultiplier = LevelData.speed;
             PlaySoundOnce = false;
+
+            if (!PlayGame)
+            {
+                Score = 0;
+            }
         }
 
         #region Functions for Buttons
 
         public void Play()
         {
+            Score = 0;
             Ranks = 0;
             Attempts = 5;
             HP = 100;

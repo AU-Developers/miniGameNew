@@ -21,6 +21,7 @@ namespace Minigame
 
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
+        private Vector2 _whitePosition = Vector2.zero, _blackPosition = Vector2.zero, _redPosition = Vector2.zero;
         private float barPosition
         {
             get
@@ -82,34 +83,37 @@ namespace Minigame
             }
         }
 
-        private float BlackSize
+        private float BlackPosition
         {
             get
             {
-                return _blackSize.x;
+                return _blackPosition.x;
             }
             set
             {
-                if (value != _blackSize.x)
+                if (value != _blackPosition.x)
                 {
-                    _blackSize.x = value;
-                    black.anchoredPosition = _blackSize;
+                    float y = black.anchoredPosition.y;
+                    _blackPosition.y = y;
+                    _blackPosition.x = value;
+                    black.anchoredPosition = _blackPosition;
                 }
             }
         }
 
-        private float RedSize
+        private float RedPosition
         {
             get
             {
-                return _redSize.x;
+                return _redPosition.x;
             }
             set
             {
-                if (value != _redSize.x)
+                if (value != _redPosition.x)
                 {
-                    _redSize.x = value;
-                    red.anchoredPosition = _redSize;
+                    _redPosition.y = red.anchoredPosition.y;
+                    _redPosition.x = value;
+                    red.anchoredPosition = _redPosition;
                 }
             }
         }
@@ -122,14 +126,14 @@ namespace Minigame
 
             _whiteSize = white.sizeDelta;
 
-            RedSize = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance._LevelData.perfectChanceRange / 2)) / 100);
-            BlackSize = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance._LevelData.goodChanceRange / 2)) / 100);
+            RedPosition = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.LevelData.perfectChanceRange / 2)) / 100);
+            BlackPosition = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance.LevelData.goodChanceRange / 2)) / 100);
 
             _redSize = black.sizeDelta;
             _blackSize = black.sizeDelta;
 
-            blackSize = (GameController.Instance._LevelData.goodChanceRange / 100) * _whiteSize.x;
-            redSize = (GameController.Instance._LevelData.perfectChanceRange / 100) * _whiteSize.x;
+            blackSize = (GameController.Instance.LevelData.goodChanceRange / 100) * _whiteSize.x;
+            redSize = (GameController.Instance.LevelData.perfectChanceRange / 100) * _whiteSize.x;
         }
 
         private void Start()
@@ -164,12 +168,8 @@ namespace Minigame
                 animator.SetInteger("state", 0);
             }
 
-            if(GameController.Instance.Ranks > 3)
-                text.text = "Success";
-            else if(GameController.Instance.Ranks < 1)
-                text.text = "";
-            else
-                text.text = "Failed";
+            if (GameController.Instance.PlayGame)
+                text.text = "Score: " + GameController.Instance.Score;
         }
     }
 }
