@@ -36,6 +36,7 @@ namespace Minigame
 
         [Range(.01f, 400)] [SerializeField] private float _speedMultiplier = 160;
         public float GaugePoint { get; private set; } = 0;
+        public int ScoreType { get; private set; } = -1;
 
         public float SpeedMultiplier{ get { return _speedMultiplier;} }
 
@@ -57,7 +58,7 @@ namespace Minigame
         public bool RankUps { get; set; } = false;
         public bool PlaySoundOnce { get; set; } = false;
         public bool Resets { get; set; } = false;
-        public int Chances { get; set; } = 5;
+        public int Attempts { get; set; } = 5;
         public int Ranks { get; set; } = 0;
         public int HP { get; set; } = 100;
         public bool PlayGame { get; set; } = false;
@@ -92,14 +93,16 @@ namespace Minigame
             _instance = this;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (Input.GetKeyDown(input) && !PlaySoundOnce)
             {
                 startedDecelerating = true;
-                PlaySoundOnce = true;
             }
+        }
 
+        private void FixedUpdate()
+        {
             if (PlayGame && HP > 0)
                 MoveGauge();
 
@@ -127,7 +130,28 @@ namespace Minigame
             else if (_speedMultiplier < 0)
                 _speedMultiplier = 0;
             else
-                RankUp();
+            {
+
+                if (GaugePoint <= StartingPointOfPerfectChanceRange + _LevelData.perfectChanceRange
+                    && GaugePoint > StartingPointOfPerfectChanceRange)
+                {
+                    ScoreType = 2;
+                    RankUps = true;
+                    Ranks++;
+                }
+                else if (GaugePoint <= StartingPointOfGoodChanceRange + _LevelData.goodChanceRange
+                    && GaugePoint > StartingPointOfGoodChanceRange)
+                {
+                    ScoreType = 1;
+                    RankUps = true;
+                    Ranks++;
+                }
+                else
+                {
+                    ScoreType = 0;
+                }
+                StartCoroutine(RankUp());
+            }
 
             if (GaugePoint > 100)
             {
@@ -177,31 +201,37 @@ namespace Minigame
         /// <summary>
         /// Reseting values to play again
         /// </summary>
-        private void RankUp()
+        private IEnumerator RankUp()
         {
-            if (RankUps)
-                Ranks++;
+            PlaySoundOnce = true;
             if (Ranks < 4)
                 _levelData = Resources.Load<LevelData>("ScriptableObjects/" + Ranks);
             else
                 PlayGame = false;
-            if (Chances <= 0)
+
+            if (Attempts <= 0)
                 PlayGame = false;
             if (HP <= 0)
                 PlayGame = false;
+
+
 
             _LevelData.position = Random.Range(0, 101);
             Resets = true;
             movingState = 1;
             time = _LevelData.time;
-            _speedMultiplier = _LevelData.speed;
             _decelerationRate = 0;
             GaugePoint = 0;
             startedDecelerating = false;
             RankUps = false;
-            Chances--;
-            PlaySoundOnce = false;
+            Attempts--;
             FindingStartingPoint();
+
+
+            yield return new WaitForFixedUpdate();
+            Resets = false;
+            _speedMultiplier = _LevelData.speed;
+            PlaySoundOnce = false;
         }
 
         #region Functions for Buttons
@@ -209,9 +239,9 @@ namespace Minigame
         public void Play()
         {
             Ranks = 0;
-            Chances = 5;
+            Attempts = 5;
             HP = 100;
-            RankUp();
+            StartCoroutine(RankUp());
             PlayGame = true;
         }
 

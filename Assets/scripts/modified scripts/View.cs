@@ -138,54 +138,27 @@ namespace Minigame
             animator = panel.GetComponent<Animator>();
         }
 
-        void Update()
+        void FixedUpdate()
         {
             barPosition = whiteSize * (GameController.Instance.GaugePoint / 100);
 
             hpText.text = "HP:" + GameController.Instance.HP;
-            chancesText.text = "Tries: " + GameController.Instance.Chances;
+            chancesText.text = "Tries: " + GameController.Instance.Attempts;
 
-            if (GameController.Instance.PlayGame)
-            {
-                btnPlay.SetActive(false);
-                btnExit.SetActive(true);
-            }
-            else
-            {
-                btnPlay.SetActive(true);
-                btnExit.SetActive(false);
-            }
+            btnPlay.SetActive(!GameController.Instance.PlayGame);
+            btnExit.SetActive(GameController.Instance.PlayGame);
                 
 
             if (GameController.Instance.Resets)
             {
                 ResetPositions();
-                GameController.Instance.Resets = false;
             }
 
             if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
-                int index = 0;
-
-                if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfPerfectChanceRange + GameController.Instance._LevelData.perfectChanceRange 
-                    && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfPerfectChanceRange)
-                {
-                    index = 2;
-                    GameController.Instance.RankUps = true;
-                }
-                else if (GameController.Instance.GaugePoint <= GameController.Instance.StartingPointOfGoodChanceRange + GameController.Instance._LevelData.goodChanceRange 
-                    && GameController.Instance.GaugePoint > GameController.Instance.StartingPointOfGoodChanceRange)
-                {
-                    index = 1;
-                    GameController.Instance.RankUps = true;
-                }
-                else
-                {
-                    index = 0;
-                }
-
-                animator.SetInteger("state", index+1);
-                audioSource.PlayOneShot(soundClips[index]);
+                print("wow");
+                animator.SetInteger("state", GameController.Instance.ScoreType+1);
+                audioSource.PlayOneShot(soundClips[GameController.Instance.ScoreType]);
             }
             else
             {
