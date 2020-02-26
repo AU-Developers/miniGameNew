@@ -160,7 +160,6 @@ namespace Minigame
 
             if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
             {
-                print(GameController.Instance.ScoreType + 1);
                 animator.SetInteger("state", GameController.Instance.ScoreType+1);
                 audioSource.PlayOneShot(soundClips[GameController.Instance.ScoreType]);
             }

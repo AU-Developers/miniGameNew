@@ -216,10 +216,8 @@ namespace Minigame
             if (HP <= 0)
                 PlayGame = false;
 
-
-            print("Before: " + LevelData.position);
             LevelData.position = Random.Range(0, 101);
-            print("After Random: " + LevelData.position);
+
             Resets = true;
             movingState = 1;
             time = LevelData.time;
