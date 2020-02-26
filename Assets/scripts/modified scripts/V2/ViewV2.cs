@@ -1,27 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Minigame
+namespace MinigameV2
 {
-    public class View : MonoBehaviour
+    public class ViewV2 : MonoBehaviour
     {
         [SerializeField] RectTransform movingBar = null;
         [SerializeField] RectTransform white = null, black = null, red = null;
 
-        [SerializeField] Text text,hpText,chancesText;
-
-        [SerializeField] GameObject panel,btnPlay,btnExit;
-
-        AudioSource audioSource;
-        Animator animator;
-
-        [SerializeField] List<AudioClip> soundClips = new List<AudioClip>();
-
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
         private Vector2 _whitePosition = Vector2.zero, _blackPosition = Vector2.zero, _redPosition = Vector2.zero;
+
+        #region Variable Properties
         private float barPosition
         {
             get
@@ -37,7 +29,7 @@ namespace Minigame
                 }
             }
         }
-        private float whiteSize
+        private float WhiteSize
         {
             get
             {
@@ -52,7 +44,7 @@ namespace Minigame
                 }
             }
         }
-        private float blackSize
+        private float BlackSize
         {
             get
             {
@@ -67,7 +59,7 @@ namespace Minigame
                 }
             }
         }
-        private float redSize
+        private float RedSize
         {
             get
             {
@@ -117,59 +109,39 @@ namespace Minigame
                 }
             }
         }
+        #endregion
 
-        private void ResetPositions()
+        #region Monobehaviour Methods
+        private void Awake()
         {
             _barPosition.y = movingBar.anchoredPosition.y;
             _redSize.y = red.anchoredPosition.y;
             _blackSize.y = black.anchoredPosition.y;
 
             _whiteSize = white.sizeDelta;
-
-            RedPosition = whiteSize * ((GameController.Instance.StartingPointOfPerfectChanceRange + (GameController.Instance.LevelData.perfectChanceRange / 2)) / 100);
-            BlackPosition = whiteSize * ((GameController.Instance.StartingPointOfGoodChanceRange + (GameController.Instance.LevelData.goodChanceRange / 2)) / 100);
-
             _redSize = red.sizeDelta;
             _blackSize = black.sizeDelta;
-
-            blackSize = (GameController.Instance.LevelData.goodChanceRange / 100) * _whiteSize.x;
-            redSize = (GameController.Instance.LevelData.perfectChanceRange / 100) * _whiteSize.x;
         }
 
         private void Start()
         {
-            audioSource = GetComponent<AudioSource>();
-            animator = panel.GetComponent<Animator>();
+            Initialize();
         }
 
-        void FixedUpdate()
+        // Update is called once per frame
+        private void FixedUpdate()
         {
-            barPosition = (whiteSize * (GameController.Instance.GaugePoint / 100)) - (whiteSize/2);
+            barPosition = (WhiteSize/2) * (GameplayControllerV2.Instance.GaugePoint / 100);
+        }
+        #endregion
 
-            hpText.text = "HP:" + GameController.Instance.HP;
-            chancesText.text = "Tries: " + GameController.Instance.Attempts;
+        private void Initialize()
+        {
+            RedSize = WhiteSize * (GameplayControllerV2.Instance.LevelData.perfectChanceRange / 100);
+            BlackSize = WhiteSize * (GameplayControllerV2.Instance.LevelData.goodChanceRange / 100);
 
-            btnPlay.SetActive(!GameController.Instance.PlayGame);
-            btnExit.SetActive(GameController.Instance.PlayGame);
-                
-
-            if (GameController.Instance.Resets)
-            {
-                ResetPositions();
-            }
-
-            if (GameController.Instance.SpeedMultiplier == 0 && GameController.Instance.PlaySoundOnce)
-            {
-                animator.SetInteger("state", GameController.Instance.ScoreType+1);
-                audioSource.PlayOneShot(soundClips[GameController.Instance.ScoreType]);
-            }
-            else
-            {
-                animator.SetInteger("state", 0);
-            }
-
-            if (GameController.Instance.PlayGame)
-                text.text = "Score: " + GameController.Instance.Score;
+            RedPosition = (WhiteSize / 2) * (GameplayControllerV2.Instance.LevelData.perfectOffset / 100);
+            BlackPosition = (WhiteSize / 2) * (GameplayControllerV2.Instance.LevelData.goodOffset / 100);
         }
     }
 }
