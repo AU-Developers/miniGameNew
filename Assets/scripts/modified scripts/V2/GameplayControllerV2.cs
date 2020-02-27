@@ -258,7 +258,11 @@ namespace MinigameV2
                     }
                     JudgingScore = true;
                     Attempts--;
-                    Invoke("Initialize", Time.fixedDeltaTime / Time.timeScale);
+                    //Invoke("Initialize", Time.fixedDeltaTime / Time.timeScale);
+                }
+                else
+                {
+                    Initialize();
                 }
             }
         }
@@ -314,11 +318,23 @@ namespace MinigameV2
         #endregion
 
         #region Button Functions
+        /// <summary>
+        /// Used to start the game from the main menu
+        /// </summary>
         public void StartGame()
         {
             GameMoveRequest[0] = true;
         }
-
+        /// <summary>
+        /// Used to cancel the game before the chicken dies (before HP gets to 0)
+        /// </summary>
+        public void CancelGame()
+        {
+            GameMoveRequest[1] = true;
+        }
+        /// <summary>
+        /// Used to end the minigame (currently only transitions back to main menu)
+        /// </summary>
         public void EndGame()
         {
             GameMoveRequest[2] = true;

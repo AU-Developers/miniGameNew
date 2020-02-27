@@ -17,6 +17,10 @@ namespace MinigameV2
         [SerializeField] private GameObject StartingPanel = null, PlayingPanel = null, EndPanel = null;
         [SerializeField] private TextMeshProUGUI HP = null, Attempts = null, Score = null, FinalScore = null;
 
+        [SerializeField] private Animator barAnimator;
+        [SerializeField] private List<AudioClip> soundClips = new List<AudioClip>();
+        AudioSource sound;
+
         #region Variable Properties
         private float barPosition
         {
@@ -129,21 +133,30 @@ namespace MinigameV2
 
         private void Start()
         {
+            sound = GetComponent<AudioSource>();
             Initialize();
+
         }
 
         private void FixedUpdate()
         {
             barPosition = (WhiteSize/2) * (GameplayControllerV2.Instance.GaugePoint / 100);
-            if (GameplayControllerV2.Instance.JudgingScore)
-            {
-                Initialize();
-            }
             StartingPanel.SetActive(GameplayControllerV2.Instance.GameState == 0);
-            if (GameplayControllerV2.Instance.GameState == 1)
+            if (GameplayControllerV2.Instance.GameState == 1 && !GameplayControllerV2.Instance.GameMoveRequest[1])
             {
                 PlayingPanel.SetActive(true);
                 UpdateTexts();
+                if (GameplayControllerV2.Instance.JudgingScore)
+                {
+                    Initialize();
+                    barAnimator.GetComponent<Animator>().SetInteger("state", GameplayControllerV2.Instance.ScoreType + 1);
+                    sound.PlayOneShot(soundClips[GameplayControllerV2.Instance.ScoreType]);
+                    print("Played Sound!");
+                }
+                else
+                {
+                    barAnimator.GetComponent<Animator>().SetInteger("state", 0);
+                }
             }
             else
                 PlayingPanel.SetActive(false);
