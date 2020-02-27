@@ -6,17 +6,28 @@ namespace MinigameV2
 {
     public class GameplayControllerV2 : MonoBehaviour
     {
+        /// <summary>
+        /// The input required to play the minigame.
+        /// </summary>
         [SerializeField] private KeyCode input = KeyCode.Space;
-        [SerializeField] private LevelDataV2 _levelData = null;
+        /// <summary>
+        /// The list of all levels' data.
+        /// </summary>
+        [SerializeField] private List<LevelDataV2> _levelData = new List<LevelDataV2>();
+        /// <summary>
+        /// Returns the current level data.
+        /// </summary>
         public LevelDataV2 LevelData
         {
             get
             {
-                return _levelData;
+                return _levelData[Level];
             }
         }
 
-
+        /// <summary>
+        /// The rate of speed of the gauge bar.
+        /// </summary>
         [Range(.01f, 400)] [SerializeField] private float speedMultiplier = 160;
 
         /// <summary>
@@ -43,10 +54,31 @@ namespace MinigameV2
         /// The player's score in the minigame.
         /// </summary>
         public int Score { get; private set; } = 0;
-        private bool checkedScore = false;
+        public bool JudgingScore { get; private set; } = false;
+        /// <summary>
+        /// The level of difficulty in the minigame.
+        /// </summary>
+        public int Level { get; private set; } = 0;
 
+        /// <summary>
+        /// Player's tolerance for the level's penalty.
+        /// </summary>
+        public int HP { get; private set; } = 0;
+        /// <summary>
+        /// The player's attempts to play in the minigame.
+        /// </summary>
         public int Attempts { get; private set; } = 5;
-
+        /// <summary>
+        /// <para>Game States:</para>
+        /// <br>0 - Main menu/Not started playing</br>
+        /// <br>1 - Ingame/Playing</br>
+        /// <br>2 - Score Screen/Done playing</br>
+        /// </summary>
+        public int GameState { get; private set; } = 0;
+        /// <summary>
+        /// Used for moving in between game states, requires the game state as the index, otherwise ignored and reset back to false.
+        /// </summary>
+        public bool[] GameMoveRequest { get; private set; } = new bool[] { false, false, false };
 
         private float decelerationRate = 0;
         [SerializeField] [Range(0.01f, 2)] private float timeToDecelerate;
@@ -75,7 +107,7 @@ namespace MinigameV2
         private void Awake()
         {
             _instance = this;
-            Initialize();
+            HardReset();
         }
         private void Start()
         {
@@ -83,12 +115,7 @@ namespace MinigameV2
         }
         private void FixedUpdate()
         {
-            if (Attempts > 0)
-                GaugeMechanics();
-            else
-            {
-
-            }
+            MinigameUpdate();
         }
         private void Update()
         {
@@ -100,9 +127,13 @@ namespace MinigameV2
 
         #endregion
 
+        #region Minigame Functions
         private void HardReset()
         {
             Score = 0;
+            Attempts = 5;
+            HP = 100;
+            Level = 0;
             Initialize();
         }
         /// <summary>
@@ -113,7 +144,7 @@ namespace MinigameV2
             timeToDecelerate = LevelData.time;
             speedMultiplier = LevelData.speed;
             startedDecelerating = false;
-            checkedScore = false;
+            JudgingScore = false;
             GaugePoint = -100;
             moveState = 1;
             ScoreType = -1;
@@ -182,17 +213,21 @@ namespace MinigameV2
                 {
                     GaugePoint = 100;
                     moveState = -1;
+                    if (!startedDecelerating)
+                        HP -= LevelData.penalty;
                 }
                 else if (GaugePoint < -100)
                 {
                     GaugePoint = -100;
                     moveState = 1;
+                    if (!startedDecelerating)
+                        HP -= LevelData.penalty;
                 }
             }
             else // Judgement of gauge point placement
             {
                 // Checks score
-                if (!checkedScore)
+                if (!JudgingScore)
                 {
                     float perfectStartPoint = -LevelData.perfectChanceRange + LevelData.perfectOffset;
                     float perfectEndPoint = LevelData.perfectChanceRange + LevelData.perfectOffset;
@@ -205,6 +240,7 @@ namespace MinigameV2
                         ScoreType = 2;
                         Score += 10;
                         print("Perfect!");
+                        Level++;
                     }
                     // Otherwise, checks if inside good range
                     else if (GaugePoint >= goodStartPoint && GaugePoint <= goodEndPoint)
@@ -212,6 +248,7 @@ namespace MinigameV2
                         ScoreType = 1;
                         Score += 5;
                         print("Good!");
+                        Level++;
                     }
                     // If it's not inside either good or perfect range, then it is judged as bad/missed.
                     else
@@ -219,11 +256,73 @@ namespace MinigameV2
                         ScoreType = 0;
                         print("Bad!");
                     }
-                    checkedScore = true;
+                    JudgingScore = true;
                     Attempts--;
                     Invoke("Initialize", Time.fixedDeltaTime / Time.timeScale);
                 }
             }
         }
+        /// <summary>
+        /// The minigame's logic.
+        /// </summary>
+        private void MinigameUpdate()
+        {
+            // If attempted to request to move from another game state, but the game state is not the right one, reset the move request.
+            for (int counter = 0; counter < GameMoveRequest.Length; counter++)
+            {
+                if (GameState != counter)
+                {
+                    GameMoveRequest[counter] = false;
+                }
+            }
+            // If move request is valid in the game state, then move the game state to the next one.
+            if (GameMoveRequest[GameState])
+            {
+                GameState++;
+                if (GameState >= GameMoveRequest.Length)
+                {
+                    GameState = 0;
+                }
+            }
+
+            // All the logic for the main menu.
+            if (GameState == 0)
+            {
+                if (Score != 0)
+                {
+                    HardReset();
+                }
+            }
+            // All the logic for ingame.
+            else if (GameState == 1)
+            {
+                if (Attempts > 0 && HP > 0)
+                {
+                    GaugeMechanics();
+                }
+                else
+                {
+                    GameMoveRequest[1] = true;
+                }
+            }
+            // All the logic for score screen
+            else if (GameState == 2)
+            {
+                HardReset();
+            }
+        }
+        #endregion
+
+        #region Button Functions
+        public void StartGame()
+        {
+            GameMoveRequest[0] = true;
+        }
+
+        public void EndGame()
+        {
+            GameMoveRequest[2] = true;
+        }
+        #endregion
     }
 }

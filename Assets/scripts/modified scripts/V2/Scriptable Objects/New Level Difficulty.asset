@@ -16,6 +16,6 @@ MonoBehaviour:
   time: 2
   goodOffset: 52
   perfectOffset: -72
-  penalty: 0
+  penalty: 5
   goodChanceRange: 14.3
   perfectChanceRange: 3.9

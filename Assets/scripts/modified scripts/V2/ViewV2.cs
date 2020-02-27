@@ -1,17 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace MinigameV2
 {
     public class ViewV2 : MonoBehaviour
     {
-        [SerializeField] RectTransform movingBar = null;
-        [SerializeField] RectTransform white = null, black = null, red = null;
+        [SerializeField] private RectTransform movingBar = null;
+        [SerializeField] private RectTransform white = null, black = null, red = null;
 
         private Vector2 _barPosition = Vector2.zero;
         private Vector2 _whiteSize = Vector2.zero, _blackSize = Vector2.zero, _redSize = Vector2.zero;
         private Vector2 _whitePosition = Vector2.zero, _blackPosition = Vector2.zero, _redPosition = Vector2.zero;
+
+        [SerializeField] private GameObject StartingPanel = null, PlayingPanel = null, EndPanel = null;
+        [SerializeField] private TextMeshProUGUI HP = null, Attempts = null, Score = null, FinalScore = null;
 
         #region Variable Properties
         private float barPosition
@@ -128,10 +132,22 @@ namespace MinigameV2
             Initialize();
         }
 
-        // Update is called once per frame
         private void FixedUpdate()
         {
             barPosition = (WhiteSize/2) * (GameplayControllerV2.Instance.GaugePoint / 100);
+            if (GameplayControllerV2.Instance.JudgingScore)
+            {
+                Initialize();
+            }
+            StartingPanel.SetActive(GameplayControllerV2.Instance.GameState == 0);
+            if (GameplayControllerV2.Instance.GameState == 1)
+            {
+                PlayingPanel.SetActive(true);
+                UpdateTexts();
+            }
+            else
+                PlayingPanel.SetActive(false);
+            EndPanel.SetActive(GameplayControllerV2.Instance.GameState == 2);
         }
         #endregion
 
@@ -142,6 +158,14 @@ namespace MinigameV2
 
             RedPosition = (WhiteSize / 2) * (GameplayControllerV2.Instance.LevelData.perfectOffset / 100);
             BlackPosition = (WhiteSize / 2) * (GameplayControllerV2.Instance.LevelData.goodOffset / 100);
+        }
+
+        private void UpdateTexts()
+        {
+            HP.text = string.Format("HP: {0}", GameplayControllerV2.Instance.HP);
+            Attempts.text = string.Format("Attempts: {0}",GameplayControllerV2.Instance.Attempts);
+            Score.text = string.Format("Score: {0}", GameplayControllerV2.Instance.Score);
+            FinalScore.text = string.Format("Final Score:\n{0}", GameplayControllerV2.Instance.Score);
         }
     }
 }
