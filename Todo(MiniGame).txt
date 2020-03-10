@@ -1,0 +1,28 @@
+//predictable via speed
+
+//levels increase if the player hit the red 
+//every bounce has a penalty
+//speed will vary depending on difficulty
+//deceleration depends on speed
+//the bar will start from left to right
+
+//gaugePoint must be 0-100 only
+//red and black can be moved
+
+//indicator stage
+//limit chances to play
+
+
+/*
+//Warning is every 2 bounce or full rotation = 1 warning
+//and 3 warning = deduct hp plus Warning animation
+
+//move the red and black every success
+//and the red must be green
+//while the black is blue
+
+//deceleration rate needs to fix
+
+Vitamins or supplements  = number of attempts(1 is to 1)
+
+*/

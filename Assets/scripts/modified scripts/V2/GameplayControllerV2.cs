@@ -15,6 +15,16 @@ namespace MinigameV2
         /// </summary>
         [SerializeField] private List<LevelDataV2> _levelData = new List<LevelDataV2>();
         /// <summary>
+        /// returns the count of all levels
+        /// </summary>
+        public int levelSize
+        {
+            get
+            {
+                return _levelData.Count;
+            }
+        }
+        /// <summary>
         /// Returns the current level data.
         /// </summary>
         public LevelDataV2 LevelData

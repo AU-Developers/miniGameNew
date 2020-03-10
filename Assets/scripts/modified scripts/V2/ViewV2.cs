@@ -142,13 +142,13 @@ namespace MinigameV2
         {
             barPosition = (WhiteSize/2) * (GameplayControllerV2.Instance.GaugePoint / 100);
             StartingPanel.SetActive(GameplayControllerV2.Instance.GameState == 0);
+            Initialize();
             if (GameplayControllerV2.Instance.GameState == 1 && !GameplayControllerV2.Instance.GameMoveRequest[1])
             {
                 PlayingPanel.SetActive(true);
                 UpdateTexts();
                 if (GameplayControllerV2.Instance.JudgingScore)
                 {
-                    Initialize();
                     barAnimator.GetComponent<Animator>().SetInteger("state", GameplayControllerV2.Instance.ScoreType + 1);
                     sound.PlayOneShot(soundClips[GameplayControllerV2.Instance.ScoreType]);
                     print("Played Sound!");
@@ -166,6 +166,9 @@ namespace MinigameV2
 
         private void Initialize()
         {
+            if (GameplayControllerV2.Instance.levelSize < GameplayControllerV2.Instance.Level)
+                return;
+
             RedSize = WhiteSize * (GameplayControllerV2.Instance.LevelData.perfectChanceRange / 100);
             BlackSize = WhiteSize * (GameplayControllerV2.Instance.LevelData.goodChanceRange / 100);
 
