@@ -21,6 +21,8 @@ namespace MinigameV2
         [SerializeField] private List<AudioClip> soundClips = new List<AudioClip>();
         AudioSource sound;
 
+        [SerializeField] public SpriteRenderer penaltyAlpha;
+
         #region Variable Properties
         private float barPosition
         {
@@ -161,6 +163,11 @@ namespace MinigameV2
             else
                 PlayingPanel.SetActive(false);
             EndPanel.SetActive(GameplayControllerV2.Instance.GameState == 2);
+
+            Color _alpha = penaltyAlpha.color;
+            _alpha.a = GameplayControllerV2.Instance.alphaValue;
+            penaltyAlpha.color = _alpha;
+
         }
         #endregion
 

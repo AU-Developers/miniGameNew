@@ -17,5 +17,7 @@ MonoBehaviour:
   goodOffset: 52
   perfectOffset: -72
   penalty: 5
+  alphaPercent: 0a0000001400000000000000
+  alphaDecreaseTime: 60.6
   goodChanceRange: 14.3
   perfectChanceRange: 3.9

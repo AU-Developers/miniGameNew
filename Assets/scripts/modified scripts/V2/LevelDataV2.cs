@@ -11,6 +11,8 @@ namespace MinigameV2
         [Range(0, 2)] public float time;
         [Range(-100, 100)] public float goodOffset, perfectOffset;
         public int penalty;
+        public int[] alphaPercent = { 10,30,50};
+        [Range(1, 100)] public float alphaDecreaseTime;
         [Range(1, 100)] public float goodChanceRange = 30, perfectChanceRange = 10;
     }
 }

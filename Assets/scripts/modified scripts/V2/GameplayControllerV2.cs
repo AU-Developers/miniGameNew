@@ -90,6 +90,20 @@ namespace MinigameV2
         /// </summary>
         public bool[] GameMoveRequest { get; private set; } = new bool[] { false, false, false };
 
+        /// <summary>
+        /// <para>penalty States:</para>
+        /// <br>0 - 1st rotation of moving bar,1st warning,adding alpha value</br>
+        /// <br>1 - 2nd rotation of moving bar,2nd warning,critical,adding alpha value</br>
+        /// <br>2 - 3rd rotation of moving bar,deducting hp from the player,adding alpha value</br>
+        /// </summary>
+        public int penaltyState { get; set; } = 0;
+        /// <summary>
+        /// for alpha animation
+        /// </summary>
+        public float alphaValue = 0;
+        ViewV2 viewAcess;
+        public bool startAlphaAnimation;
+
         private float decelerationRate = 0;
         [SerializeField] [Range(0.01f, 2)] private float timeToDecelerate;
         private bool startedDecelerating = false;
@@ -116,12 +130,13 @@ namespace MinigameV2
         #region Monobehavior Methods
         private void Awake()
         {
+            viewAcess = (ViewV2)FindObjectOfType(typeof(ViewV2));
             _instance = this;
             HardReset();
         }
         private void Start()
         {
-
+     
         }
         private void FixedUpdate()
         {
@@ -132,6 +147,17 @@ namespace MinigameV2
             if (Input.GetKeyDown(input))
             {
                 startedDecelerating = true;
+            }
+            if (startAlphaAnimation)
+            {
+                print(alphaValue);
+                if(viewAcess.penaltyAlpha.color.a < LevelData.alphaPercent[penaltyState])
+                    alphaValue += LevelData.alphaPercent[penaltyState]/100 * Time.deltaTime;
+                else
+                {
+                    alphaValue -= LevelData.alphaDecreaseTime / 100 * Time.deltaTime;
+                    startAlphaAnimation = false;
+                }
             }
         }
 
@@ -223,15 +249,20 @@ namespace MinigameV2
                 {
                     GaugePoint = 100;
                     moveState = -1;
-                    if (!startedDecelerating)
-                        HP -= LevelData.penalty;
                 }
                 else if (GaugePoint < -100)
                 {
+                    penaltyState++;
+                    startAlphaAnimation = true;
+                    if (penaltyState == 3)
+                    {
+                        penaltyState = 0;
+                        if (!startedDecelerating)
+                            HP -= LevelData.penalty;
+                    }
                     GaugePoint = -100;
                     moveState = 1;
-                    if (!startedDecelerating)
-                        HP -= LevelData.penalty;
+                   
                 }
             }
             else // Judgement of gauge point placement
